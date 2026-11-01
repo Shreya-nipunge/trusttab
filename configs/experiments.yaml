@@ -1,8 +1,14 @@
+
 project:
   name: TrustTab
   version: "0.1.0"
 
+dataset:
+  name: german_credit
+
 experiments:
+  test_size: 0.2
+
   noise_levels:
     - 0.0
     - 0.1
@@ -21,4 +27,7 @@ models:
   - logistic_regression
   - random_forest
   - xgboost
-  - tabpfn
+
+output:
+  directory: results
+  filename: stress_test_results.csv
