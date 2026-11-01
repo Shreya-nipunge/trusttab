@@ -1,0 +1,19 @@
+﻿project:
+  name: TrustTab
+  version: "0.1.0"
+
+dataset:
+  name: german_credit
+
+experiments:
+  test_size: 0.2
+  noise_levels: [0.0, 0.2]
+  seeds: [42]
+
+models:
+  - logistic_regression
+  - random_forest
+
+output:
+  directory: results
+  filename: a6_smoke_test.csv
