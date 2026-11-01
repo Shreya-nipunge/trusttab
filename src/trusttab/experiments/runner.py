@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from trusttab.data import load_german_credit
+from trusttab.data import load_adult, load_german_credit
 from trusttab.models import build_model
 from trusttab.noise import inject_symmetric_label_noise
 
@@ -18,6 +18,12 @@ MetricEvaluator = Callable[
     [pd.Series | np.ndarray, np.ndarray, np.ndarray],
     dict[str, float],
 ]
+
+
+DATASET_LOADERS = {
+    "german_credit": load_german_credit,
+    "adult": load_adult,
+}
 
 
 def run_stress_test(
@@ -29,12 +35,13 @@ def run_stress_test(
         "random_forest",
     ),
     test_size: float = 0.2,
+    dataset_name: str = "german_credit",
     output_path: str | Path | None = None,
     metric_evaluator: MetricEvaluator | None = None,
     model_params: dict[str, dict[str, Any]] | None = None,
 ) -> pd.DataFrame:
     """
-    Run a multi-seed label-noise stress test on German Credit.
+    Run a multi-seed label-noise stress test on a supported dataset.
 
     The test split is clean. Only training labels are corrupted.
 
@@ -66,7 +73,13 @@ def run_stress_test(
     if len(set(model_names)) != len(model_names):
         raise ValueError("Model names must be unique.")
 
-    X, y = load_german_credit()
+    if dataset_name not in DATASET_LOADERS:
+        raise ValueError(
+            f"Unsupported dataset '{dataset_name}'. "
+            f"Choose from: {list(DATASET_LOADERS)}."
+        )
+
+    X, y = DATASET_LOADERS[dataset_name]()
 
     results = []
 
@@ -87,7 +100,9 @@ def run_stress_test(
             )
 
             corrupted_count = int(
-                np.sum(np.asarray(noisy_y_train) != np.asarray(y_train))
+                np.sum(
+                    np.asarray(noisy_y_train) != np.asarray(y_train)
+                )
             )
 
             for model_name in model_names:
@@ -147,7 +162,7 @@ def run_stress_test(
 
                 results.append(
                     {
-                        "dataset": "german_credit",
+                        "dataset": dataset_name,
                         "model": model_name,
                         "noise_rate": float(noise_rate),
                         "seed": int(seed),

@@ -9,6 +9,9 @@ import yaml
 from trusttab.models import SUPPORTED_MODELS
 
 
+SUPPORTED_DATASETS = ("german_credit", "adult")
+
+
 def load_experiment_config(
     config_path: str | Path,
 ) -> dict[str, Any]:
@@ -41,15 +44,21 @@ def load_experiment_config(
                 f"Missing configuration section: {section}"
             )
 
+    if not isinstance(config["dataset"], dict):
+        raise ValueError("dataset must be a YAML mapping.")
+
     dataset_name = config["dataset"].get("name")
 
-    if dataset_name != "german_credit":
+    if dataset_name not in SUPPORTED_DATASETS:
         raise ValueError(
             f"Unsupported dataset: {dataset_name}. "
-            "Currently supported: german_credit."
+            f"Currently supported: {', '.join(SUPPORTED_DATASETS)}."
         )
 
     experiments = config["experiments"]
+
+    if not isinstance(experiments, dict):
+        raise ValueError("experiments must be a YAML mapping.")
 
     noise_levels = experiments.get("noise_levels")
     seeds = experiments.get("seeds")
@@ -104,6 +113,9 @@ def load_experiment_config(
             f"Unsupported models: {sorted(unsupported_models)}. "
             f"Supported models: {list(SUPPORTED_MODELS)}"
         )
+
+    if not isinstance(config["output"], dict):
+        raise ValueError("output must be a YAML mapping.")
 
     output = config["output"]
 

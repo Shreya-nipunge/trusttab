@@ -35,12 +35,13 @@ def main() -> None:
     print(f"Output: {output_path}")
 
     results = run_stress_test(
-        noise_levels=config["experiments"]["noise_levels"],
-        seeds=config["experiments"]["seeds"],
-        model_names=config["models"],
-        test_size=config["experiments"]["test_size"],
-        output_path=output_path,
-    )
+    dataset_name=config["dataset"]["name"],
+    noise_levels=config["experiments"]["noise_levels"],
+    seeds=config["experiments"]["seeds"],
+    model_names=config["models"],
+    test_size=config["experiments"]["test_size"],
+    output_path=output_path,
+)
 
     print("\nExperiment completed.")
     print(f"Total result rows: {len(results)}")

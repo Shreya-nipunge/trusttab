@@ -6,6 +6,12 @@ import pandas as pd
 import pytest
 
 import trusttab.experiments.runner as runner
+def patch_german_credit_loader(monkeypatch, fake_dataset):
+    monkeypatch.setitem(
+        runner.DATASET_LOADERS,
+        "german_credit",
+        lambda: fake_dataset,
+    )
 
 
 @pytest.fixture
@@ -52,9 +58,7 @@ def fake_evaluator(y_true, y_pred, y_prob):
 def test_runner_creates_expected_number_of_results(
     monkeypatch, fake_dataset
 ):
-    monkeypatch.setattr(
-        runner, "load_german_credit", lambda: fake_dataset
-    )
+    patch_german_credit_loader(monkeypatch, fake_dataset)
     monkeypatch.setattr(runner, "build_model", fake_model_factory)
 
     results = runner.run_stress_test(
@@ -70,9 +74,7 @@ def test_runner_creates_expected_number_of_results(
 def test_runner_records_experiment_metadata(
     monkeypatch, fake_dataset
 ):
-    monkeypatch.setattr(
-        runner, "load_german_credit", lambda: fake_dataset
-    )
+    patch_german_credit_loader(monkeypatch, fake_dataset)
     monkeypatch.setattr(runner, "build_model", fake_model_factory)
 
     results = runner.run_stress_test(
@@ -95,9 +97,7 @@ def test_runner_records_experiment_metadata(
 def test_runner_uses_supplied_metric_evaluator(
     monkeypatch, fake_dataset
 ):
-    monkeypatch.setattr(
-        runner, "load_german_credit", lambda: fake_dataset
-    )
+    patch_german_credit_loader(monkeypatch, fake_dataset)
     monkeypatch.setattr(runner, "build_model", fake_model_factory)
 
     results = runner.run_stress_test(
@@ -114,9 +114,7 @@ def test_runner_uses_supplied_metric_evaluator(
 def test_runner_saves_csv(
     monkeypatch, fake_dataset, tmp_path
 ):
-    monkeypatch.setattr(
-        runner, "load_german_credit", lambda: fake_dataset
-    )
+    patch_german_credit_loader(monkeypatch, fake_dataset)
     monkeypatch.setattr(runner, "build_model", fake_model_factory)
 
     output_file = tmp_path / "results" / "test.csv"
@@ -153,3 +151,34 @@ def test_runner_saves_csv(
 def test_runner_rejects_invalid_configuration(kwargs):
     with pytest.raises(ValueError):
         runner.run_stress_test(**kwargs)
+
+
+def test_runner_uses_adult_dataset(monkeypatch, fake_dataset):
+    adult_loader_called = []
+
+    def fake_adult_loader():
+        adult_loader_called.append(True)
+        return fake_dataset
+
+    monkeypatch.setitem(
+        runner.DATASET_LOADERS,
+        "adult",
+        fake_adult_loader,
+    )
+    monkeypatch.setattr(runner, "build_model", fake_model_factory)
+
+    results = runner.run_stress_test(
+        dataset_name="adult",
+        noise_levels=[0.0],
+        seeds=[42],
+        model_names=["logistic_regression"],
+        metric_evaluator=fake_evaluator,
+    )
+
+    assert adult_loader_called == [True]
+    assert results.iloc[0]["dataset"] == "adult"
+
+
+def test_runner_rejects_unsupported_dataset():
+    with pytest.raises(ValueError, match="Unsupported dataset"):
+        runner.run_stress_test(dataset_name="unknown_dataset")

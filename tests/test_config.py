@@ -70,3 +70,34 @@ output:
 
     with pytest.raises(ValueError, match="Unsupported models"):
         load_experiment_config(config_file)
+def test_load_adult_experiment_config(tmp_path):
+    config_file = tmp_path / "adult.yaml"
+
+    config_file.write_text(
+        """
+project:
+  name: TrustTab
+  version: "0.1.0"
+dataset:
+  name: adult
+experiments:
+  test_size: 0.2
+  noise_levels: [0.0, 0.2, 0.4]
+  seeds: [42]
+models:
+  - logistic_regression
+output:
+  directory: results
+  filename: adult.csv
+""",
+        encoding="utf-8",
+    )
+
+    config = load_experiment_config(config_file)
+
+    assert config["dataset"]["name"] == "adult"
+    assert config["experiments"]["noise_levels"] == [
+        0.0,
+        0.2,
+        0.4,
+    ]
