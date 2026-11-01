@@ -1,5 +1,6 @@
 """Dataset loading utilities for TrustTab."""
 
+from trusttab.data.preprocessing import build_preprocessor
 from trusttab.data.german_credit import (
     load_german_credit,
     validate_german_credit_data,
@@ -8,4 +9,5 @@ from trusttab.data.german_credit import (
 __all__ = [
     "load_german_credit",
     "validate_german_credit_data",
+    "build_preprocessor",
 ]
