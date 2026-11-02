@@ -3,7 +3,6 @@
 import numpy as np
 import pandas as pd
 import pytest
-
 from sklearn.pipeline import Pipeline
 
 from trusttab.models import SUPPORTED_MODELS, build_model
@@ -120,6 +119,49 @@ def test_supported_models_are_declared():
     assert "random_forest" in SUPPORTED_MODELS
     assert "xgboost" in SUPPORTED_MODELS
 
+def test_tabpfn_is_a_supported_model():
+    assert "tabpfn" in SUPPORTED_MODELS
+
+
+def test_tabpfn_model_creation_does_not_require_tabpfn(sample_data):
+    features, _ = sample_data
+
+    model = build_model(
+        "tabpfn",
+        features,
+        model_params={"device": "cpu"},
+    )
+
+    assert isinstance(model, Pipeline)
+    assert list(model.named_steps) == [
+        "preprocessor",
+        "classifier",
+    ]
+    assert model.named_steps["classifier"].model_params == {
+        "device": "cpu"
+    }
+    assert not hasattr(model, "classes_")
+
+
+def test_tabpfn_missing_dependency_has_install_instructions(
+    sample_data, monkeypatch
+):
+    import builtins
+
+    features, target = sample_data
+    original_import = builtins.__import__
+
+    def missing_tabpfn(name, *args, **kwargs):
+        if name == "tabpfn":
+            raise ImportError("not installed")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", missing_tabpfn)
+
+    model = build_model("tabpfn", features)
+
+    with pytest.raises(ImportError, match=r"trusttab\[tabpfn\]"):
+        model.fit(features, target)
 
 def test_xgboost_integration_when_installed(sample_data):
     pytest.importorskip("xgboost")

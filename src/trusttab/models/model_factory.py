@@ -1,4 +1,4 @@
-"""Model factory for TrustTab classical machine learning models."""
+"""Model factory for TrustTab classification models."""
 
 from typing import Any
 
@@ -8,12 +8,13 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
 from trusttab.data.preprocessing import build_preprocessor
-
+from trusttab.models.tabpfn_adapter import TabPFNAdapter
 
 SUPPORTED_MODELS = (
     "logistic_regression",
     "random_forest",
     "xgboost",
+    "tabpfn",
 )
 
 
@@ -24,25 +25,23 @@ def build_model(
     model_params: dict[str, Any] | None = None,
 ) -> Pipeline:
     """
-    Build a complete preprocessing and classification pipeline.
+    Build an unfitted preprocessing and classification pipeline.
 
     Parameters
     ----------
     model_name:
         One of the supported model names.
     features:
-        Training feature DataFrame, used to configure preprocessing.
-        The returned pipeline remains unfitted.
+        Training feature DataFrame used to configure preprocessing.
     random_state:
         Random seed for reproducibility.
     model_params:
-        Optional dictionary of model-specific hyperparameters.
+        Optional model-specific hyperparameters.
 
     Returns
     -------
-    An unfitted sklearn Pipeline containing preprocessing and classifier.
+    An unfitted sklearn Pipeline.
     """
-
     if model_name not in SUPPORTED_MODELS:
         raise ValueError(
             f"Unknown model '{model_name}'. "
@@ -68,7 +67,7 @@ def build_model(
         defaults.update(params)
         classifier = RandomForestClassifier(**defaults)
 
-    else:
+    elif model_name == "xgboost":
         try:
             from xgboost import XGBClassifier
         except ImportError as exc:
@@ -90,6 +89,9 @@ def build_model(
         }
         defaults.update(params)
         classifier = XGBClassifier(**defaults)
+
+    else:
+        classifier = TabPFNAdapter(model_params=params)
 
     return Pipeline(
         steps=[
