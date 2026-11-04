@@ -72,6 +72,8 @@ output:
 
     with pytest.raises(ValueError, match="Unsupported models"):
         load_experiment_config(config_file)
+
+
 def test_load_adult_experiment_config(tmp_path):
     config_file = tmp_path / "adult.yaml"
 
@@ -234,4 +236,43 @@ def test_unified_configuration_rejects_invalid_feature_magnitude(tmp_path):
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="non-negative"):
+        load_experiment_config(path)
+
+
+def test_tracking_settings_are_normalized_and_validated(tmp_path):
+    path = tmp_path / "tracked-config.yaml"
+    path.write_text(
+        dedent(
+            """\
+            project:
+              name: TrustTab
+            dataset:
+              name: german_credit
+            experiments:
+              seeds: [1]
+              noise_levels: [0.0]
+            models: [logistic_regression]
+            output:
+              directory: results
+              filename: result.csv
+            tracking:
+              enabled: true
+              directory: local_runs
+              experiment_name: smoke
+            """
+        ),
+        encoding="utf-8",
+    )
+    config = load_experiment_config(path)
+    assert config["tracking"] == {
+        "enabled": True,
+        "directory": "local_runs",
+        "experiment_name": "smoke",
+    }
+
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("enabled: true", "enabled: yesplease"),
+        encoding="utf-8",
+    )
+    with pytest.raises(TypeError, match="tracking.enabled"):
         load_experiment_config(path)

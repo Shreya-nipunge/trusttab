@@ -1,6 +1,6 @@
 """Unified robustness benchmark orchestration."""
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -105,7 +105,9 @@ def _validate_values(
             or not np.isfinite(level)
             or not 0 <= level <= 1
         ):
-            raise ValueError("Label-noise levels must be finite numbers between 0 and 1.")
+            raise ValueError(
+                "Label-noise levels must be finite numbers between 0 and 1."
+            )
     if len(set(label_noise_levels)) != len(label_noise_levels):
         raise ValueError("Label-noise levels must be unique.")
 
@@ -125,7 +127,9 @@ def _feature_specs_for_data(
     magnitudes = feature_shifts.get("magnitudes", [])
     features_by_type = feature_shifts.get("features")
     if not types or not magnitudes:
-        raise ValueError("Enabled feature shifts require non-empty types and magnitudes.")
+        raise ValueError(
+            "Enabled feature shifts require non-empty types and magnitudes."
+        )
 
     specs = []
     for shift_type in types:
@@ -160,7 +164,9 @@ def _feature_specs_for_data(
     return validate_feature_shifts(specs)
 
 
-def _evaluate(model, X_test, y_test, metric_evaluator: MetricEvaluator) -> dict[str, float]:
+def _evaluate(
+    model, X_test, y_test, metric_evaluator: MetricEvaluator
+) -> dict[str, float]:
     predictions = model.predict(X_test)
     probabilities = model.predict_proba(X_test)
     positive_index = list(model.classes_).index(1)
@@ -205,7 +211,7 @@ def _evaluate(model, X_test, y_test, metric_evaluator: MetricEvaluator) -> dict[
     }
 
 
-def run_robustness_benchmark(
+def _run_robustness_benchmark(
     *,
     dataset_names: Sequence[str] | None = None,
     dataset_name: str | None = None,
@@ -217,6 +223,7 @@ def run_robustness_benchmark(
     output_path: str | Path | None = None,
     metric_evaluator: MetricEvaluator | None = None,
     model_params: dict[str, dict[str, Any]] | None = None,
+    _dataset_callback: Callable[[str, pd.DataFrame, pd.Series], None] | None = None,
 ) -> pd.DataFrame:
     """Run clean, label-noise, and feature-shift evaluations in one result table.
 
@@ -232,9 +239,11 @@ def run_robustness_benchmark(
     """
     if dataset_names is not None and dataset_name is not None:
         raise ValueError("Pass dataset_names or dataset_name, not both.")
-    datasets = list(dataset_names) if dataset_names is not None else [
-        dataset_name or "german_credit"
-    ]
+    datasets = (
+        list(dataset_names)
+        if dataset_names is not None
+        else [dataset_name or "german_credit"]
+    )
     levels = list(label_noise_levels)
     _validate_values(
         dataset_names=datasets,
@@ -249,6 +258,8 @@ def run_robustness_benchmark(
 
     for name in datasets:
         X, y = DATASET_LOADERS[name]()
+        if _dataset_callback is not None:
+            _dataset_callback(name, X, y)
         for seed in seeds:
             X_train, X_test, y_train, y_test = train_test_split(
                 X,
@@ -282,9 +293,7 @@ def run_robustness_benchmark(
                     model_params=params,
                 )
                 baseline_model.fit(X_train, y_train)
-                baseline_metrics = _evaluate(
-                    baseline_model, X_test, y_test, evaluator
-                )
+                baseline_metrics = _evaluate(baseline_model, X_test, y_test, evaluator)
                 baseline_id = f"{name}:{model_name}:{seed}"
 
                 def add_record(
@@ -374,3 +383,93 @@ def run_robustness_benchmark(
         output_file.parent.mkdir(parents=True, exist_ok=True)
         results.to_csv(output_file, index=False)
     return results
+
+
+def run_robustness_benchmark(
+    *,
+    dataset_names: Sequence[str] | None = None,
+    dataset_name: str | None = None,
+    label_noise_levels: Sequence[float] = (),
+    feature_shifts: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = None,
+    seeds: Sequence[int] = (0, 1, 2, 3, 4),
+    model_names: Sequence[str] = ("logistic_regression", "random_forest"),
+    test_size: float = 0.2,
+    output_path: str | Path | None = None,
+    metric_evaluator: MetricEvaluator | None = None,
+    model_params: dict[str, dict[str, Any]] | None = None,
+    tracking_dir: str | Path | None = None,
+    experiment_name: str | None = None,
+    original_config: Any = None,
+    normalized_config: Any = None,
+) -> pd.DataFrame:
+    """Run the robustness benchmark, optionally recording a local experiment.
+
+    Tracking is disabled when ``tracking_dir`` is omitted. Tracked runs save
+    the configuration, environment and dataset provenance, results, a report,
+    and a manifest containing completion or failure status.
+    """
+    datasets = (
+        list(dataset_names)
+        if dataset_names is not None
+        else [dataset_name or "german_credit"]
+    )
+    if original_config is None:
+        original_config = {
+            "dataset_names": datasets,
+            "label_noise_levels": list(label_noise_levels),
+            "feature_shifts": feature_shifts,
+            "seeds": list(seeds),
+            "models": list(model_names),
+            "model_params": model_params or {},
+            "test_size": test_size,
+            "output_path": output_path,
+            "metric_evaluator": (
+                f"{metric_evaluator.__module__}.{metric_evaluator.__qualname__}"
+                if metric_evaluator is not None
+                and hasattr(metric_evaluator, "__module__")
+                and hasattr(metric_evaluator, "__qualname__")
+                else None
+            ),
+        }
+    if normalized_config is None:
+        normalized_config = original_config
+
+    tracker = None
+    callback = None
+    if tracking_dir is not None:
+        from trusttab.experiments.tracking import _RunTracker
+
+        tracker = _RunTracker(
+            tracking_dir,
+            experiment_name=experiment_name,
+            original_config=original_config,
+            normalized_config=normalized_config,
+            dataset_names=datasets,
+            models=list(model_names),
+            seeds=list(seeds),
+        )
+        callback = tracker.record_dataset
+
+    try:
+        results = _run_robustness_benchmark(
+            dataset_names=dataset_names,
+            dataset_name=dataset_name,
+            label_noise_levels=label_noise_levels,
+            feature_shifts=feature_shifts,
+            seeds=seeds,
+            model_names=model_names,
+            test_size=test_size,
+            output_path=output_path,
+            metric_evaluator=metric_evaluator,
+            model_params=model_params,
+            _dataset_callback=callback,
+        )
+        if tracker is not None:
+            tracker.complete(results)
+            results.attrs["run_id"] = tracker.run_id
+            results.attrs["run_dir"] = str(tracker.run_dir)
+        return results
+    except Exception as exc:
+        if tracker is not None:
+            tracker.fail(exc)
+        raise
