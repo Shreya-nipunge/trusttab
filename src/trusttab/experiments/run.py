@@ -5,12 +5,13 @@ import argparse
 from pathlib import Path
 
 from trusttab.experiments.config import load_experiment_config
+from trusttab.experiments.feature_shift_runner import run_feature_shift_test
 from trusttab.experiments.runner import run_stress_test
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run a configured TrustTab label-noise experiment."
+        description="Run a configured TrustTab stress-test experiment."
     )
 
     parser.add_argument(
@@ -30,18 +31,28 @@ def main() -> None:
     print("Starting TrustTab experiment")
     print(f"Dataset: {config['dataset']['name']}")
     print(f"Models: {config['models']}")
-    print(f"Noise levels: {config['experiments']['noise_levels']}")
     print(f"Seeds: {config['experiments']['seeds']}")
     print(f"Output: {output_path}")
 
-    results = run_stress_test(
-    dataset_name=config["dataset"]["name"],
-    noise_levels=config["experiments"]["noise_levels"],
-    seeds=config["experiments"]["seeds"],
-    model_names=config["models"],
-    test_size=config["experiments"]["test_size"],
-    output_path=output_path,
-)
+    common = {
+        "dataset_name": config["dataset"]["name"],
+        "seeds": config["experiments"]["seeds"],
+        "model_names": config["models"],
+        "test_size": config["experiments"].get("test_size", 0.2),
+        "output_path": output_path,
+    }
+    if config.get("feature_shifts"):
+        print(f"Feature shifts: {config['feature_shifts']}")
+        results = run_feature_shift_test(
+            feature_shifts=config["feature_shifts"],
+            **common,
+        )
+    else:
+        print(f"Noise levels: {config['experiments']['noise_levels']}")
+        results = run_stress_test(
+            noise_levels=config["experiments"]["noise_levels"],
+            **common,
+        )
 
     print("\nExperiment completed.")
     print(f"Total result rows: {len(results)}")
