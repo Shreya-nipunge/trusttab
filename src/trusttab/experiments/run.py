@@ -4,6 +4,7 @@
 import argparse
 from pathlib import Path
 
+from trusttab.experiments.benchmark import run_robustness_benchmark
 from trusttab.experiments.config import load_experiment_config
 from trusttab.experiments.feature_shift_runner import run_feature_shift_test
 from trusttab.experiments.runner import run_stress_test
@@ -29,27 +30,44 @@ def main() -> None:
     output_path = Path(output["directory"]) / output["filename"]
 
     print("Starting TrustTab experiment")
-    print(f"Dataset: {config['dataset']['name']}")
+    dataset_names = config["dataset"].get("names") or [
+        config["dataset"].get("name")
+    ]
+    print(f"Dataset(s): {dataset_names}")
     print(f"Models: {config['models']}")
     print(f"Seeds: {config['experiments']['seeds']}")
     print(f"Output: {output_path}")
 
     common = {
-        "dataset_name": config["dataset"]["name"],
         "seeds": config["experiments"]["seeds"],
         "model_names": config["models"],
         "test_size": config["experiments"].get("test_size", 0.2),
         "output_path": output_path,
     }
-    if config.get("feature_shifts"):
-        print(f"Feature shifts: {config['feature_shifts']}")
+    benchmark_mode = config.get("benchmark_mode")
+    if benchmark_mode is None:
+        benchmark_mode = (
+            "feature_shift_legacy"
+            if config.get("feature_shifts")
+            else "label_noise_legacy"
+        )
+    if benchmark_mode == "unified":
+        settings = config["benchmark_settings"]
+        results = run_robustness_benchmark(
+            dataset_names=dataset_names,
+            label_noise_levels=settings["label_noise_levels"],
+            feature_shifts=settings["feature_shifts"],
+            **common,
+        )
+    elif benchmark_mode == "feature_shift_legacy":
         results = run_feature_shift_test(
+            dataset_name=dataset_names[0],
             feature_shifts=config["feature_shifts"],
             **common,
         )
     else:
-        print(f"Noise levels: {config['experiments']['noise_levels']}")
         results = run_stress_test(
+            dataset_name=dataset_names[0],
             noise_levels=config["experiments"]["noise_levels"],
             **common,
         )

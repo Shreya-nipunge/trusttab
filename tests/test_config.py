@@ -1,5 +1,7 @@
 """Tests for experiment configuration loading."""
 
+from textwrap import dedent
+
 import pytest
 
 from trusttab.experiments.config import load_experiment_config
@@ -162,4 +164,74 @@ def test_feature_shift_configuration_is_loaded(tmp_path):
 def test_invalid_feature_shift_configuration_is_rejected(tmp_path, shift_yaml):
     path = _write_feature_shift_config(tmp_path, shift_yaml)
     with pytest.raises(ValueError, match="feature_shifts"):
+        load_experiment_config(path)
+
+
+def test_load_combined_unified_benchmark_config(tmp_path):
+    path = tmp_path / "unified.yaml"
+    path.write_text(
+        dedent(
+            """
+            project:
+              name: TrustTab
+            dataset:
+              names: [german_credit, adult]
+            experiments:
+              seeds: [0, 1]
+              label_noise:
+                enabled: true
+                levels: [0.0, 0.2]
+              feature_shift:
+                enabled: true
+                types: [mean_shift, variance_scaling]
+                magnitudes: [0.5, 1.0]
+                features: [age]
+            models:
+              - logistic_regression
+            output:
+              directory: results
+              filename: unified.csv
+            """
+        ),
+        encoding="utf-8",
+    )
+    config = load_experiment_config(path)
+    assert config["benchmark_mode"] == "unified"
+    assert config["benchmark_settings"]["label_noise_levels"] == [0.0, 0.2]
+    assert config["benchmark_settings"]["feature_shifts"]["types"] == [
+        "mean_shift",
+        "variance_scaling",
+    ]
+    assert config["dataset"]["names"] == ["german_credit", "adult"]
+
+
+def test_unified_configuration_rejects_invalid_feature_magnitude(tmp_path):
+    path = tmp_path / "invalid-unified.yaml"
+    path.write_text(
+        dedent(
+            """
+            project:
+              name: TrustTab
+            dataset:
+              name: german_credit
+            experiments:
+              seeds: [1]
+              label_noise:
+                enabled: true
+                levels: [0.0]
+              feature_shift:
+                enabled: true
+                types: [variance_scaling]
+                magnitudes: [-1.0]
+                features: [age]
+            models:
+              - logistic_regression
+            output:
+              directory: results
+              filename: invalid.csv
+            """
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="non-negative"):
         load_experiment_config(path)
