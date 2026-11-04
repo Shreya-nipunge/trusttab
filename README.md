@@ -58,3 +58,17 @@ results = run_robustness_benchmark(
 
 See [the unified benchmarking guide](docs/unified-benchmarking.md) for YAML
 configuration, result columns, and baseline interpretation.
+
+## Automated robustness reports
+
+Generate Markdown analysis, CSV summaries, statistical comparisons, and figures
+from unified benchmark results:
+
+```python
+from trusttab.reporting import generate_robustness_report
+
+report = generate_robustness_report(results, "results/robustness_report")
+```
+
+See [the reporting guide](docs/robustness-reporting.md) for expected columns,
+artifact details, and metric interpretation.
