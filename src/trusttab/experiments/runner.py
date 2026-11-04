@@ -10,9 +10,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from trusttab.data import load_adult, load_german_credit
+from trusttab.evaluation import evaluate_classifier
 from trusttab.models import build_model
 from trusttab.noise import inject_symmetric_label_noise
-
 
 MetricEvaluator = Callable[
     [pd.Series | np.ndarray, np.ndarray, np.ndarray],
@@ -48,8 +48,7 @@ def run_stress_test(
     If metric_evaluator is provided, it receives:
         y_test, predictions, positive-class probabilities.
 
-    If no evaluator is provided, basic metrics are calculated locally
-    as a temporary fallback until the shared B0 evaluator is integrated.
+    If no evaluator is provided, the shared TrustTab evaluator is used.
     """
 
     if not 0 < test_size < 1:
@@ -129,36 +128,17 @@ def run_stress_test(
                     :, positive_class_index
                 ]
 
-                if metric_evaluator is not None:
-                    metrics = metric_evaluator(
-                        y_test,
-                        predictions,
-                        positive_probabilities,
-                    )
-                else:
-                    from sklearn.metrics import (
-                        accuracy_score,
-                        balanced_accuracy_score,
-                        f1_score,
-                        roc_auc_score,
-                    )
+                evaluator = (
+                    evaluate_classifier
+                    if metric_evaluator is None
+                    else metric_evaluator
+                )
 
-                    metrics = {
-                        "accuracy": accuracy_score(y_test, predictions),
-                        "balanced_accuracy": balanced_accuracy_score(
-                            y_test, predictions
-                        ),
-                        "macro_f1": f1_score(
-                            y_test,
-                            predictions,
-                            average="macro",
-                            zero_division=0,
-                        ),
-                        "roc_auc": roc_auc_score(
-                            y_test,
-                            positive_probabilities,
-                        ),
-                    }
+                metrics = evaluator(
+                    y_test,
+                    predictions,
+                    positive_probabilities,
+                )
 
                 results.append(
                     {

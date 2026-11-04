@@ -5,7 +5,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import trusttab.experiments.runner as runner
+from trusttab.experiments import runner
+
+
 def patch_german_credit_loader(monkeypatch, fake_dataset):
     monkeypatch.setitem(
         runner.DATASET_LOADERS,
@@ -182,3 +184,32 @@ def test_runner_uses_adult_dataset(monkeypatch, fake_dataset):
 def test_runner_rejects_unsupported_dataset():
     with pytest.raises(ValueError, match="Unsupported dataset"):
         runner.run_stress_test(dataset_name="unknown_dataset")
+
+
+def test_runner_uses_default_evaluator(
+    monkeypatch, fake_dataset
+):
+    patch_german_credit_loader(monkeypatch, fake_dataset)
+    monkeypatch.setattr(runner, "build_model", fake_model_factory)
+
+    results = runner.run_stress_test(
+        noise_levels=[0.0],
+        seeds=[42],
+        model_names=["logistic_regression"],
+    )
+
+    expected_metrics = {
+        "accuracy",
+        "balanced_accuracy",
+        "macro_f1",
+        "roc_auc",
+        "brier_score",
+        "ece",
+    }
+
+    assert expected_metrics.issubset(results.columns)
+
+    row = results.iloc[0]
+
+    for metric in expected_metrics:
+        assert np.isfinite(row[metric])
