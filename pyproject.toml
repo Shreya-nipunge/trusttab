@@ -35,6 +35,9 @@ dependencies = [
     "scipy>=1.10"
 ]
 
+[project.scripts]
+trusttab = "trusttab.experiments.run:main"
+
 [project.optional-dependencies]
 xgboost = ["xgboost>=2.0"]
 tabpfn = ["tabpfn"]
