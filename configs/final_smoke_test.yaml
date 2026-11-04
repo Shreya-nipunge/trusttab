@@ -1,0 +1,31 @@
+project:
+  name: TrustTab final smoke test
+  version: "0.1.0"
+
+dataset:
+  name: german_credit
+
+experiments:
+  test_size: 0.25
+  seeds: [11, 23]
+  label_noise:
+    enabled: true
+    levels: [0.0, 0.2]
+  feature_shift:
+    enabled: true
+    types: [mean_shift]
+    magnitudes: [0.5]
+    features: [duration]
+
+models:
+  - logistic_regression
+  - random_forest
+
+output:
+  directory: results
+  filename: final_smoke_test.csv
+
+tracking:
+  enabled: true
+  directory: experiments/runs
+  experiment_name: final-smoke-test

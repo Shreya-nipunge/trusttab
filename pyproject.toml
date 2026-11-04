@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Reliability-aware stress testing for tabular machine learning"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "TrustTab Contributors" }
 ]
@@ -35,12 +35,15 @@ dependencies = [
     "scipy>=1.10"
 ]
 
+[project.scripts]
+trusttab = "trusttab.experiments.run:main"
+
 [project.optional-dependencies]
 xgboost = ["xgboost>=2.0"]
 tabpfn = ["tabpfn"]
 dev = [
     "pytest>=7.0",
-    "ruff>=0.5",
+    "ruff==0.5.7",
     "build>=1.0"
 ]
 
@@ -54,3 +57,38 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+
+[tool.ruff.format]
+exclude = [
+    # Legacy files not formatted by the project formatter; keep this allowlist
+    # until each file can be reformatted in a focused cleanup.
+    "src/trusttab/__init__.py",
+    "src/trusttab/data/__init__.py",
+    "src/trusttab/data/adult.py",
+    "src/trusttab/data/german_credit.py",
+    "src/trusttab/data/preprocessing.py",
+    "src/trusttab/evaluation/metrics.py",
+    "src/trusttab/evaluation/operating_region.py",
+    "src/trusttab/experiments/runner.py",
+    "src/trusttab/models/__init__.py",
+    "src/trusttab/models/model_factory.py",
+    "src/trusttab/noise/feature_shift.py",
+    "src/trusttab/noise/label_noise.py",
+    "src/trusttab/statistics/comparison.py",
+    "src/trusttab/visualization/reliability.py",
+    "tests/test_adult.py",
+    "tests/test_benchmark.py",
+    "tests/test_calibration.py",
+    "tests/test_data.py",
+    "tests/test_experiments.py",
+    "tests/test_feature_shift.py",
+    "tests/test_metrics.py",
+    "tests/test_models.py",
+    "tests/test_noise.py",
+    "tests/test_operating_region.py",
+    "tests/test_package.py",
+    "tests/test_preprocessing.py",
+    "tests/test_statistics.py",
+    "tests/test_tabpfn_adapter.py",
+    "tests/test_visualization.py",
+]

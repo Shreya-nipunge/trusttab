@@ -1,83 +1,153 @@
 # TrustTab
 
-**Reliability-Aware Stress Testing for Tabular Machine Learning**
+TrustTab is a Python framework for measuring predictive performance and
+probability reliability of tabular classifiers under controlled training-label
+noise and test-time feature shifts. It provides reproducible experiments and
+research-oriented summaries; it does not claim that any model is universally
+robust.
 
-TrustTab is an open-source research framework for evaluating the predictive performance and probability reliability of tabular machine learning models under progressively corrupted training data.
+## Capabilities
 
-## Research Study
+- Logistic Regression and Random Forest, with optional XGBoost and TabPFN
+- German Credit and Adult Census Income dataset loaders
+- Clean baselines, symmetric training-label noise, and numeric/categorical
+  feature shifts
+- Accuracy, balanced accuracy, macro F1, ROC-AUC, Brier score, ECE, adaptive
+  ECE, maximum calibration error, and log loss
+- Sigmoid and isotonic probability calibration
+- Paired statistical comparisons with multiple-comparison corrections
+- CSV benchmarks, Markdown reports, headless figures, and a local run registry
 
-**Accuracy Isn't Reliability: Evaluating Tabular Foundation Models Under Progressive Label Noise**
+The package is organized under `src/trusttab/`: `data` and `models` prepare
+inputs and estimators; `noise` creates perturbations; `experiments` orchestrates
+runs and tracking; `evaluation`, `statistics`, `visualization`, and `reporting`
+analyze results.
 
-## Research Objective
+## Install
 
-This project investigates whether predictive performance and probability reliability deteriorate at the same rate when training-label noise progressively increases.
+Python 3.11 or 3.12 is supported.
 
-## Models
+```bash
+python -m pip install -e ".[dev]"
+```
 
-- Logistic Regression
-- Random Forest
-- XGBoost
-- TabPFN
+Optional models can be installed separately:
 
-## Evaluation
+```bash
+python -m pip install -e ".[xgboost]"
+python -m pip install -e ".[tabpfn]"
+```
 
-### Predictive Performance
-- Accuracy
-- Balanced Accuracy
-- Macro F1
-- ROC-AUC
+## Quick start
 
-### Reliability
-- Expected Calibration Error (ECE)
-- Brier Score
-- Calibration Curves
+Run the small two-model, two-seed end-to-end benchmark (including label noise,
+feature shift, reporting, and local tracking):
 
-## Status
+```bash
+trusttab --config configs/final_smoke_test.yaml
+```
 
-🚧 Research and development in progress.
-## Unified robustness benchmark
-
-TrustTab can compare clean baselines with label-noise and feature-shift
-scenarios in one CSV:
+The Python API also supports a unified benchmark:
 
 ```python
 from trusttab.experiments import run_robustness_benchmark
 
 results = run_robustness_benchmark(
+    dataset_name="german_credit",
     label_noise_levels=[0.0, 0.2],
-    feature_shifts={
-        "enabled": True,
-        "types": ["mean_shift"],
-        "magnitudes": [0.5, 1.0],
-        "features": ["age"],
-    },
+    feature_shifts=[
+        {"type": "mean_shift", "features": ["age"], "magnitude": 0.5}
+    ],
+    model_names=["logistic_regression", "random_forest"],
     seeds=[1, 2, 3],
-    output_path="results/unified_benchmark.csv",
+    output_path="results/benchmark.csv",
 )
 ```
 
-See [the unified benchmarking guide](docs/unified-benchmarking.md) for YAML
-configuration, result columns, and baseline interpretation.
+Dataset loading may require network access on the first use if the source data
+is not already available. Unit tests use local fixtures and do not download
+datasets.
 
-## Automated robustness reports
+## Configuration and CLI
 
-Generate Markdown analysis, CSV summaries, statistical comparisons, and figures
-from unified benchmark results:
+YAML configurations are validated before execution. See
+[`configs/a6_smoke_test.yaml`](configs/a6_smoke_test.yaml) for a small runnable
+configuration and [`configs/experiments.yaml`](configs/experiments.yaml) for a
+larger setup. The smoke-test config uses the German Credit loader, which may
+need access to the dataset source when the data is not cached.
+
+```bash
+trusttab --help
+trusttab --config configs/experiments.yaml
+trusttab --list-runs --runs-dir experiments/runs
+trusttab --inspect-run RUN_ID --runs-dir experiments/runs
+trusttab --compare-runs RUN_ID_A RUN_ID_B --runs-dir experiments/runs
+trusttab --verify-run RUN_ID --runs-dir experiments/runs
+```
+
+Enable local tracking with `tracking: {enabled: true}` in YAML. Run commands
+write benchmark output to the configured output location; tracked artifacts are
+stored under `experiments/runs` unless configured otherwise.
+
+## Analysis and reports
+
+The reporting API accepts unified benchmark results:
 
 ```python
 from trusttab.reporting import generate_robustness_report
 
-report = generate_robustness_report(results, "results/robustness_report")
+artifacts = generate_robustness_report(results, "results/report")
 ```
 
-See [the reporting guide](docs/robustness-reporting.md) for expected columns,
-artifact details, and metric interpretation.
+It produces a Markdown report, CSV summaries, and headless PNG figures. See
+the [benchmark](docs/unified-benchmarking.md),
+[metrics](docs/metrics.md), [statistics](docs/statistics.md),
+[visualization](docs/visualization.md), [reporting](docs/robustness-reporting.md),
+and [tracking](docs/experiment-tracking.md) guides.
 
-## Experiment tracking
+## Outputs and reproducibility
 
-Track unified benchmark runs locally with configuration, environment, dataset
-fingerprints, results, and a report. Add `tracking: {enabled: true}` to a YAML
-configuration or pass `tracking_dir="experiments/runs"` to
-`run_robustness_benchmark`. The system works offline and does not require an
-external tracking service. See [the tracking guide](docs/experiment-tracking.md)
-for run inspection and reproducibility verification commands.
+Benchmark CSV rows identify the dataset, model, scenario, perturbation,
+corruption level, seed, metrics, sample counts, and baseline link. Tracked runs
+also retain original and normalized configuration, configuration hash,
+environment and Git metadata, dataset fingerprints, results, and report
+artifacts. Re-execution checks numerical agreement using configurable absolute
+and relative tolerances. Numerical reproducibility does not imply bitwise
+identity across hardware, dependency versions, or nondeterministic estimators.
+
+## Research assumptions and limitations
+
+- Label noise is symmetric: each training label has the configured chance of
+  being flipped. Real annotation errors may be class-dependent or structured.
+- Feature shifts are controlled synthetic interventions and do not represent
+  every real distribution shift.
+- ECE and related binned calibration metrics depend on binning choices and can
+  be noisy on small samples. ROC-AUC is undefined when an evaluation split has
+  one class.
+- Paired tests require aligned observations/seeds and rely on their own
+  assumptions. Small seed counts have limited power; multiplicity correction
+  does not remove this limitation.
+- German Credit and Adult are limited benchmark datasets and should not be
+  treated as representative of all tabular applications.
+- Optional model implementations may have model-specific constraints and
+  nondeterminism. Reproducibility metadata helps interpret reruns but cannot
+  guarantee identical results everywhere.
+- Robustness under a specified perturbation is distinct from clean predictive
+  accuracy and does not establish universal reliability.
+
+## Development
+
+```bash
+python -m pip install -e ".[dev]"
+pytest -q
+ruff check src tests
+ruff format --check src tests
+python -m build
+```
+
+CI runs these checks on Python 3.11 and 3.12 without downloading external
+datasets or requiring optional model packages.
+
+Ruff format currently excludes 29 legacy source and test files from its format
+check; the remaining files are checked. These exclusions are an explicit
+cleanup backlog, not a claim that those files match formatter output.
