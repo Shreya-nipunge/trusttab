@@ -147,3 +147,7 @@ python -m build
 
 CI runs these checks on Python 3.11 and 3.12 without downloading external
 datasets or requiring optional model packages.
+
+Ruff format currently excludes 29 legacy source and test files from its format
+check; the remaining files are checked. These exclusions are an explicit
+cleanup backlog, not a claim that those files match formatter output.

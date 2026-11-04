@@ -26,6 +26,7 @@ Thumbs.db
 # Generated results
 results/
 figures/
+experiments/runs/
 
 # Local datasets
 data/raw/*
