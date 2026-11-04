@@ -125,7 +125,6 @@ def test_runner_saves_csv(
         noise_levels=[0.0],
         seeds=[42],
         model_names=["logistic_regression"],
-        metric_evaluator=fake_evaluator,
         output_path=output_file,
     )
 
@@ -134,6 +133,11 @@ def test_runner_saves_csv(
     saved = pd.read_csv(output_file)
 
     assert len(saved) == len(results)
+    assert {
+        "maximum_calibration_error",
+        "adaptive_ece",
+        "log_loss",
+    }.issubset(saved.columns)
 
 
 @pytest.mark.parametrize(
@@ -205,6 +209,9 @@ def test_runner_uses_default_evaluator(
         "roc_auc",
         "brier_score",
         "ece",
+        "maximum_calibration_error",
+        "adaptive_ece",
+        "log_loss",
     }
 
     assert expected_metrics.issubset(results.columns)
