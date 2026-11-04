@@ -101,3 +101,65 @@ output:
         0.2,
         0.4,
     ]
+
+
+def _write_feature_shift_config(tmp_path, shifts):
+    config_file = tmp_path / "feature_shift.yaml"
+    config_file.write_text(
+        """
+project:
+  name: TrustTab
+dataset:
+  name: german_credit
+experiments:
+  noise_levels: [0.0]
+  seeds: [42]
+models:
+  - logistic_regression
+output:
+  directory: results
+  filename: shifted.csv
+feature_shifts:
+"""
+        + shifts,
+        encoding="utf-8",
+    )
+    return config_file
+
+
+def test_feature_shift_configuration_is_loaded(tmp_path):
+    path = _write_feature_shift_config(
+        tmp_path,
+        """  - type: gaussian_noise
+    features: [age]
+    magnitude: 0.2
+  - type: mean_shift
+    features: [age]
+    magnitude: 0.5
+""",
+    )
+    config = load_experiment_config(path)
+    assert len(config["feature_shifts"]) == 2
+    assert config["feature_shifts"][0]["type"] == "gaussian_noise"
+
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("  noise_levels: [0.0]\n", ""),
+        encoding="utf-8",
+    )
+    config = load_experiment_config(path)
+    assert len(config["feature_shifts"]) == 2
+
+
+@pytest.mark.parametrize(
+    "shift_yaml",
+    [
+        "  - type: unsupported\n    features: [age]\n    magnitude: 1.0\n",
+        "  - type: gaussian_noise\n    features: [age]\n    magnitude: -1.0\n",
+        "  - type: mean_shift\n    features: []\n    magnitude: 1.0\n",
+        "  - type: category_probability_redistribution\n    features: [job]\n    magnitude: 1.0\n    probabilities: {a: 0.0, b: 0.0}\n",
+    ],
+)
+def test_invalid_feature_shift_configuration_is_rejected(tmp_path, shift_yaml):
+    path = _write_feature_shift_config(tmp_path, shift_yaml)
+    with pytest.raises(ValueError, match="feature_shifts"):
+        load_experiment_config(path)

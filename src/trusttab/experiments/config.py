@@ -7,7 +7,7 @@ from typing import Any
 import yaml
 
 from trusttab.models import SUPPORTED_MODELS
-
+from trusttab.noise import validate_feature_shifts
 
 SUPPORTED_DATASETS = ("german_credit", "adult")
 
@@ -60,15 +60,27 @@ def load_experiment_config(
     if not isinstance(experiments, dict):
         raise ValueError("experiments must be a YAML mapping.")
 
+    feature_shifts = None
+    if "feature_shifts" in config:
+        try:
+            feature_shifts = validate_feature_shifts(config["feature_shifts"])
+            config["feature_shifts"] = feature_shifts
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid feature_shifts configuration: {exc}") from exc
+
     noise_levels = experiments.get("noise_levels")
     seeds = experiments.get("seeds")
     test_size = experiments.get("test_size", 0.2)
     models = config["models"]
 
-    if not isinstance(noise_levels, list) or not noise_levels:
+    if not isinstance(noise_levels, list) and (
+        noise_levels is not None or not feature_shifts
+    ):
+        raise ValueError("noise_levels must be a non-empty list.")
+    if isinstance(noise_levels, list) and not noise_levels and not feature_shifts:
         raise ValueError("noise_levels must be a non-empty list.")
 
-    if any(
+    if isinstance(noise_levels, list) and any(
         not isinstance(rate, (int, float))
         or isinstance(rate, bool)
         or not 0 <= rate <= 1
@@ -78,7 +90,7 @@ def load_experiment_config(
             "Every noise level must be a number between 0 and 1."
         )
 
-    if len(set(noise_levels)) != len(noise_levels):
+    if isinstance(noise_levels, list) and len(set(noise_levels)) != len(noise_levels):
         raise ValueError("Noise levels must be unique.")
 
     if not isinstance(seeds, list) or not seeds:
