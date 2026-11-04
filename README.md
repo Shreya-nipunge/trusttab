@@ -35,3 +35,26 @@ This project investigates whether predictive performance and probability reliabi
 ## Status
 
 🚧 Research and development in progress.
+## Unified robustness benchmark
+
+TrustTab can compare clean baselines with label-noise and feature-shift
+scenarios in one CSV:
+
+```python
+from trusttab.experiments import run_robustness_benchmark
+
+results = run_robustness_benchmark(
+    label_noise_levels=[0.0, 0.2],
+    feature_shifts={
+        "enabled": True,
+        "types": ["mean_shift"],
+        "magnitudes": [0.5, 1.0],
+        "features": ["age"],
+    },
+    seeds=[1, 2, 3],
+    output_path="results/unified_benchmark.csv",
+)
+```
+
+See [the unified benchmarking guide](docs/unified-benchmarking.md) for YAML
+configuration, result columns, and baseline interpretation.
