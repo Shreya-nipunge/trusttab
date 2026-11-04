@@ -1,4 +1,3 @@
-
 """Load and validate TrustTab experiment configuration."""
 
 from pathlib import Path
@@ -57,34 +56,46 @@ def _validate_feature_shift_settings(settings: Any) -> dict[str, Any]:
     if features is not None:
         if isinstance(features, dict):
             if set(features).difference(types):
-                raise ValueError("Feature selections may only use configured shift types.")
+                raise ValueError(
+                    "Feature selections may only use configured shift types."
+                )
             for feature_names in features.values():
                 if (
                     not isinstance(feature_names, list)
                     or not feature_names
-                    or any(not isinstance(name, str) or not name for name in feature_names)
+                    or any(
+                        not isinstance(name, str) or not name for name in feature_names
+                    )
                     or len(set(feature_names)) != len(feature_names)
                 ):
-                    raise ValueError("Each feature selection must be a non-empty unique list.")
+                    raise ValueError(
+                        "Each feature selection must be a non-empty unique list."
+                    )
         elif (
             not isinstance(features, list)
             or not features
             or any(not isinstance(name, str) or not name for name in features)
             or len(set(features)) != len(features)
         ):
-            raise ValueError("features must be a non-empty list or a type-to-list mapping.")
+            raise ValueError(
+                "features must be a non-empty list or a type-to-list mapping."
+            )
 
     if types and magnitudes:
         for shift_type in types:
             selected = (
-                features.get(shift_type)
-                if isinstance(features, dict)
-                else features
+                features.get(shift_type) if isinstance(features, dict) else features
             ) or ["__feature__"]
             for magnitude in magnitudes:
                 try:
                     validate_feature_shifts(
-                        [{"type": shift_type, "features": selected, "magnitude": magnitude}]
+                        [
+                            {
+                                "type": shift_type,
+                                "features": selected,
+                                "magnitude": magnitude,
+                            }
+                        ]
                     )
                 except (TypeError, ValueError) as exc:
                     raise ValueError(f"Invalid feature_shift setting: {exc}") from exc
@@ -104,9 +115,7 @@ def load_experiment_config(
     path = Path(config_path)
 
     if not path.exists():
-        raise FileNotFoundError(
-            f"Configuration file not found: {path}"
-        )
+        raise FileNotFoundError(f"Configuration file not found: {path}")
 
     with path.open("r", encoding="utf-8") as file:
         config = yaml.safe_load(file)
@@ -124,9 +133,7 @@ def load_experiment_config(
 
     for section in required_sections:
         if section not in config:
-            raise ValueError(
-                f"Missing configuration section: {section}"
-            )
+            raise ValueError(f"Missing configuration section: {section}")
 
     if not isinstance(config["dataset"], dict):
         raise ValueError("dataset must be a YAML mapping.")
@@ -162,7 +169,10 @@ def load_experiment_config(
             "Use experiments.feature_shift or legacy top-level feature_shifts, not both."
         )
     if "feature_shifts" in config:
-        if not isinstance(config["feature_shifts"], list) or not config["feature_shifts"]:
+        if (
+            not isinstance(config["feature_shifts"], list)
+            or not config["feature_shifts"]
+        ):
             raise ValueError("feature_shifts must be a non-empty list.")
         try:
             feature_shifts = validate_feature_shifts(config["feature_shifts"])
@@ -193,8 +203,14 @@ def load_experiment_config(
         noise_levels = experiments.get("noise_levels")
         has_legacy_noise_levels = noise_levels is not None
         if noise_levels is None:
-            noise_levels = [] if feature_shifts or "feature_shift" in experiments else None
-        if noise_levels is None or (not noise_levels and not feature_shifts and "feature_shift" not in experiments):
+            noise_levels = (
+                [] if feature_shifts or "feature_shift" in experiments else None
+            )
+        if noise_levels is None or (
+            not noise_levels
+            and not feature_shifts
+            and "feature_shift" not in experiments
+        ):
             raise ValueError("noise_levels must be a non-empty list.")
         levels = _validate_noise_levels(noise_levels) if noise_levels else []
         # Preserve the legacy field, and expose a normalized view for unified runs.
@@ -281,5 +297,27 @@ def load_experiment_config(
 
     if not output["filename"].strip():
         raise ValueError("output.filename cannot be empty.")
+
+    tracking = config.get("tracking", {})
+    if not isinstance(tracking, dict):
+        raise TypeError("tracking must be a YAML mapping.")
+    tracking_enabled = tracking.get("enabled", False)
+    if not isinstance(tracking_enabled, bool):
+        raise TypeError("tracking.enabled must be a boolean.")
+    tracking_directory = tracking.get("directory", "experiments/runs")
+    if not isinstance(tracking_directory, str):
+        raise TypeError("tracking.directory must be a string.")
+    if not tracking_directory.strip():
+        raise ValueError("tracking.directory must be a non-empty string.")
+    experiment_name = tracking.get("experiment_name")
+    if experiment_name is not None and (
+        not isinstance(experiment_name, str) or not experiment_name.strip()
+    ):
+        raise ValueError("tracking.experiment_name must be a non-empty string.")
+    config["tracking"] = {
+        "enabled": tracking_enabled,
+        "directory": tracking_directory,
+        "experiment_name": experiment_name,
+    }
 
     return config

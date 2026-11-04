@@ -72,3 +72,12 @@ report = generate_robustness_report(results, "results/robustness_report")
 
 See [the reporting guide](docs/robustness-reporting.md) for expected columns,
 artifact details, and metric interpretation.
+
+## Experiment tracking
+
+Track unified benchmark runs locally with configuration, environment, dataset
+fingerprints, results, and a report. Add `tracking: {enabled: true}` to a YAML
+configuration or pass `tracking_dir="experiments/runs"` to
+`run_robustness_benchmark`. The system works offline and does not require an
+external tracking service. See [the tracking guide](docs/experiment-tracking.md)
+for run inspection and reproducibility verification commands.
