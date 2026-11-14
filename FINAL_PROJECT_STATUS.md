@@ -89,3 +89,11 @@ Current branch: `chore/remove-github-actions` (`d175cab`), 17 commits ahead of t
 Latest local checks: 331 tests passed with one existing sklearn warning; Ruff lint/format, CLI module help, and `git diff --check` passed. The `.github/workflows/ci.yml` config covers Python 3.11/3.12, optional XGBoost, tests, lint, formatting, builds, archive inspection, and outside-checkout installation. **Remote CI has not run.** The standard isolated build is blocked by network `WinError 10013` fetching setuptools; Twine is absent. GitHub CLI authentication is invalid and direct remote access to github.com:443 is blocked. No push or remote CI action has occurred.
 
 The finalized core research files remain locally intact; RQ4 is unanswered. The local 0.1.0 wheel and sdist hashes and prior outside-checkout no-deps smoke results remain in the publication checklist. TestPyPI/production publishing is not performed. See the latest delivery entry in `IMPLEMENTATION_PROGRESS.md` for the exact blockers.
+
+## GitHub delivery and CI update — 2026-11-15
+
+The reviewed commit was cherry-picked without conflicts onto `delivery/trusttab-final-2026-11-15`, based on verified `origin/main` `d57888a59c0bbdd2a60356e7f30837b17ace517a`. Cherry-pick SHA: `4ef6beb6f6b2a51772c393606840e1030f718786`. PR [#21](https://github.com/Shreya-nipunge/trusttab/pull/21) is open against `main`, with merge state `CLEAN`; it has not been merged.
+
+GitHub Actions PR run [43632520439](https://github.com/Shreya-nipunge/trusttab/actions/runs/43632520439) passed all five jobs: Python 3.11/3.12 core tests, Python 3.11/3.12 optional XGBoost tests, and package build/Twine/archive/outside-checkout installation tests. Push run [43632487542](https://github.com/Shreya-nipunge/trusttab/actions/runs/43632487542) also passed all five jobs. Local tests were 331 passed with one existing sklearn warning; Ruff lint/format, CLI help, and offline quick-start passed. RQ4 remains unanswered because calibration was disabled in the core experiment.
+
+No merge, release, TestPyPI upload, or production PyPI publication occurred. TestPyPI rehearsal and separate production approval remain release gates.

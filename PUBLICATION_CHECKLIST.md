@@ -190,3 +190,13 @@ Repository review also covered `src/`, `tests/`, `configs/`, `docs/`, `examples/
 - The staged delivery includes source, configs, docs, tests, CI, the audit/progress material, and only the authoritative core results CSV/manifest/final report folder. It excludes the preserved `.package-verify-*` environment, phase8 smoke outputs, local datasets/caches, old duplicate experiment runs, and binary distributions.
 - Latest local test/lint/format/CLI checks pass (331 passed, one existing sklearn warning; 34 formatted). `git diff --cached --check` reports existing Markdown trailing spaces used for hard line breaks in the newly added audit/report docs; no source-code whitespace error was reported.
 - GitHub Actions, push to main, TestPyPI and PyPI are **BLOCKED/NOT VERIFIED** in this environment. The local release candidate remains 0.1.0; package publication has not been attempted.
+
+## PR #21 and CI completion — 2026-11-15
+
+- Delivery branch: `delivery/trusttab-final-2026-11-15`, based on `origin/main` `d57888a59c0bbdd2a60356e7f30837b17ace517a`.
+- Reviewed commit cherry-picked without conflicts as `4ef6beb6f6b2a51772c393606840e1030f718786`.
+- PR: https://github.com/Shreya-nipunge/trusttab/pull/21. It is OPEN, unmerged, and currently has `CLEAN` merge state. Main protection endpoint returned 404 `Branch not protected`.
+- PR Actions run https://github.com/Shreya-nipunge/trusttab/actions/runs/43632520439: **SUCCESS** for 3.11 core, 3.12 core, XGBoost 3.11, XGBoost 3.12, and build/Twine/archive/installed wheel+sdist checks. The corresponding push run https://github.com/Shreya-nipunge/trusttab/actions/runs/43632487542 also passed all five jobs.
+- Fresh local isolated build produced `dist/release-delivery-verify-2026-11-15/trusttab-0.1.0-py3-none-any.whl` (SHA256 `87be64bf8d190c06bd36f54147b3f40d8de3f07658188751ac01f905071d1ed3`) and `dist/release-delivery-verify-2026-11-15/trusttab-0.1.0.tar.gz` (SHA256 `6953359b757b3ff22cc151d7e38beb1f1a8080ee999d62c6cae451b08d512cda`). Archive scans passed; no credentials, datasets, checkpoints, local caches, or experiment outputs were included.
+- Local test suite: 331 passed, one existing sklearn warning; lint, format, CLI and offline quick-start passed. The local isolated Windows environment's pandas DLL remains blocked by Application Control; GitHub clean Linux distribution installs passed.
+- No PR merge, TestPyPI upload, production PyPI publication, tag/release, or full experiment rerun occurred. RQ4 remains unanswered; TestPyPI and separate production approval remain outstanding.
