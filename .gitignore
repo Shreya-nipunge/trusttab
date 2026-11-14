@@ -44,3 +44,20 @@ htmlcov/
 
 # Logs
 *.log
+
+# Local verification environments and generated tool caches
+.package-verify-*/
+.pytest-tmp*/
+.ruff_cache/
+
+# Local smoke outputs and research runs (the finalized core evidence is
+# selectively versioned in the release commit; local smoke runs stay private).
+experiments/phase8_smoke_runs/
+
+# Local credentials and private key material
+.pypirc
+*.pem
+*.key
+
+# Other local verification/build caches
+.cache/

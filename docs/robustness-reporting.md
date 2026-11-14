@@ -48,6 +48,11 @@ metric columns are allowed.
 
 ## Generated artifacts
 
+All reports include `calibration_status.csv` and `calibration_comparison.csv`.
+The status table counts rows by scenario and calibration outcome. The
+condition-level table retains calibration status/error and descriptive paired
+raw-versus-calibrated probability metrics; unavailable values stay NaN.
+
 ```text
 robustness_report/
 ├── report.md
@@ -64,10 +69,33 @@ robustness_report/
 ```
 
 `model_comparison.csv` reports mean, sample standard deviation, and non-missing
-sample count for each metric, separately for dataset, model, experiment type,
-corruption type, and level. The executive summary ranks performance on clean
-baselines and calibration by within-dataset metric ranks so differently scaled
-reliability measures are not averaged directly.
+sample count for each raw metric and each available `calibrated_` metric,
+separately for dataset, model, experiment type, corruption type, and level.
+The executive summary ranks performance on clean baselines and uses calibrated
+reliability metrics for its calibration ranking when those columns are present;
+otherwise it uses raw reliability metrics. Metrics with different scales are
+ranked within dataset rather than averaged directly.
+
+For label-noise rows, `n_corrupted` records the realized number of independent
+Bernoulli flips in the training labels. It varies randomly around the expected
+count `noise_rate × n_train`; it is not constrained to a fixed rounded count.
+Evaluation labels remain clean.
+
+Calibration-enabled benchmark rows keep raw metrics in standard columns and
+add `calibrated_`-prefixed metrics on the same condition row. The generated
+`calibration_comparison.csv` contains paired per-condition raw/calibrated
+Brier, ECE, adaptive ECE, MCE, and log-loss values and calibrated-minus-raw
+differences. This table is descriptive and does not add a significance test.
+The report also writes a seed-level Wilcoxon analysis of raw versus calibrated
+ECE and Brier values, using only successful calibration rows and matched
+seeds. Failed values remain excluded and visible in the calibration status
+table. The inferential comparison unit is a seed-level model run, never a test
+observation. See [statistics.md](statistics.md) for the families and limits.
+`calibration_status.csv` retains each condition's status and error text; the
+report also includes counts by status. Failed or disabled calibrated values
+remain missing and are not imputed. Raw results remain in the original columns.
+Rows labeled `not_applicable` indicate calibration was not evaluated for that
+experiment type, such as feature-shift rows in the current runner.
 
 ## Interpreting degradation and tests
 
@@ -80,13 +108,10 @@ standard deviation, and count across seeds are included for absolute and
 relative degradation. Scenario and dataset groups are never combined in these
 tables.
 
-Model comparisons use paired t-tests on matched dataset/seed observations,
-through TrustTab's existing statistical utilities. Missing metric observations
-are excluded and unmatched rows are not treated as pairs. Holm correction is
-applied within each metric and scenario family. The report includes adjusted
-p-values and 95% confidence intervals for the mean paired difference (model A
-minus model B). Statistical significance does not establish practical
-importance; consider the difference magnitude and interval alongside the
-adjusted p-value. Paired tests assume independent pairs and approximately
-normal paired differences; inspect distributions or use TrustTab's Wilcoxon
-utility for non-normal differences when needed.
+Legacy pairwise model comparisons use matched seeds within each dataset,
+scenario, and metric; no test pools different datasets. The six Phase 7
+tables add per-dataset seed-blocked Friedman tests, gated Nemenyi comparisons,
+calibration Wilcoxon tests, normalized degradation slopes, effect sizes, and
+small-sample confidence intervals. Holm families and the Friedman/Nemenyi
+gate are described in [statistics.md](statistics.md). Five seeds provide low
+power; two fixed datasets do not support dataset-population inference.

@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.datasets import make_classification
 from sklearn.exceptions import NotFittedError
 from sklearn.linear_model import LogisticRegression
@@ -68,6 +69,48 @@ def test_calibrate_fitted_classifier():
     probabilities = calibrated.predict_proba(X[80:])
 
     assert probabilities.shape == (40, 2)
+    assert np.allclose(probabilities.sum(axis=1), 1.0)
+
+
+def test_fitted_calibration_does_not_refit_base_estimator():
+    X, y = make_data()
+    base = LogisticRegression(max_iter=1000).fit(X[:80], y[:80])
+    original_coefficients = base.coef_.copy()
+
+    calibrated = calibrate_fitted_classifier(base, X[80:], y[80:])
+
+    np.testing.assert_array_equal(base.coef_, original_coefficients)
+    assert calibrated.estimator.estimator is base
+    probabilities = calibrated.predict_proba(X[80:])
+    assert probabilities.shape == (40, 2)
+    assert np.isfinite(probabilities).all()
+    assert np.all((probabilities >= 0) & (probabilities <= 1))
+    assert np.allclose(probabilities.sum(axis=1), 1.0)
+
+
+class _DecisionOnlyClassifier(ClassifierMixin, BaseEstimator):
+    def fit(self, X, y):
+        self.classes_ = np.unique(y)
+        self.fitted_ = True
+        return self
+
+    def decision_function(self, X):
+        return np.asarray(X)[:, 0]
+
+    def predict(self, X):
+        return (self.decision_function(X) >= 0).astype(int)
+
+
+def test_fitted_calibration_uses_decision_function_when_no_probabilities_exist():
+    X, y = make_data()
+    base = _DecisionOnlyClassifier().fit(X[:80], y[:80])
+
+    calibrated = calibrate_fitted_classifier(base, X[80:], y[80:])
+    probabilities = calibrated.predict_proba(X[80:])
+
+    assert probabilities.shape == (40, 2)
+    assert np.isfinite(probabilities).all()
+    assert np.all((probabilities >= 0) & (probabilities <= 1))
     assert np.allclose(probabilities.sum(axis=1), 1.0)
 
 

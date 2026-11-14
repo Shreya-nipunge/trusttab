@@ -4,6 +4,10 @@ from trusttab.experiments.benchmark import run_robustness_benchmark
 from trusttab.experiments.config import load_experiment_config
 from trusttab.experiments.feature_shift_runner import run_feature_shift_test
 from trusttab.experiments.runner import run_stress_test
+from trusttab.experiments.resumable import (
+    run_resumable_experiment,
+    validate_resumable_results,
+)
 from trusttab.experiments.tracking import (
     compare_runs,
     dataset_fingerprint,
@@ -22,6 +26,8 @@ __all__ = [
     "load_experiment_config",
     "run_feature_shift_test",
     "run_robustness_benchmark",
+    "run_resumable_experiment",
     "run_stress_test",
+    "validate_resumable_results",
     "verify_reproducibility",
 ]

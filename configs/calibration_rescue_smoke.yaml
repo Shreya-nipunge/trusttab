@@ -1,0 +1,30 @@
+project:
+  name: TrustTab Platt calibration smoke test
+  version: "0.1.0"
+
+dataset:
+  name: german_credit
+
+experiments:
+  test_size: 0.2 # Used by the uncalibrated workflow; calibration sizes below apply when enabled.
+  label_noise:
+    enabled: true
+    levels: [0.0, 0.2]
+  seeds: [0]
+  calibration:
+    enabled: true
+    method: sigmoid
+    train_size: 0.70
+    calibration_size: 0.15
+    test_size: 0.15
+
+models:
+  - logistic_regression
+
+model_params:
+  logistic_regression:
+    max_iter: 500
+
+output:
+  directory: results
+  filename: calibration_rescue_smoke.csv

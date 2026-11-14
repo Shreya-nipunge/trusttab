@@ -14,12 +14,28 @@ def sample_data():
         {
             "age": [22, 25, 30, 35, 40, 45, 50, 55, 60, 65],
             "income": [
-                20000, 25000, 30000, 35000, 40000,
-                45000, 50000, 55000, 60000, 65000,
+                20000,
+                25000,
+                30000,
+                35000,
+                40000,
+                45000,
+                50000,
+                55000,
+                60000,
+                65000,
             ],
             "job": [
-                "student", "student", "worker", "worker", "manager",
-                "manager", "worker", "manager", "worker", "manager",
+                "student",
+                "student",
+                "worker",
+                "worker",
+                "manager",
+                "manager",
+                "worker",
+                "manager",
+                "worker",
+                "manager",
             ],
         }
     )
@@ -119,6 +135,7 @@ def test_supported_models_are_declared():
     assert "random_forest" in SUPPORTED_MODELS
     assert "xgboost" in SUPPORTED_MODELS
 
+
 def test_tabpfn_is_a_supported_model():
     assert "tabpfn" in SUPPORTED_MODELS
 
@@ -138,14 +155,36 @@ def test_tabpfn_model_creation_does_not_require_tabpfn(sample_data):
         "classifier",
     ]
     assert model.named_steps["classifier"].model_params == {
-        "device": "cpu"
+        "device": "cpu",
+        "random_state": 42,
     }
     assert not hasattr(model, "classes_")
+    configured_transformers = dict(
+        (name, transformer)
+        for name, transformer, _columns in model.named_steps[
+            "preprocessor"
+        ].transformers
+    )
+    numeric_steps = configured_transformers["numeric"].named_steps
+    assert set(numeric_steps) == {"imputer"}
+    categorical_steps = configured_transformers["categorical"].named_steps
+    assert set(categorical_steps) == {"imputer", "onehot"}
 
 
-def test_tabpfn_missing_dependency_has_install_instructions(
-    sample_data, monkeypatch
-):
+def test_managed_random_state_cannot_be_overridden_by_model_parameters(sample_data):
+    features, _ = sample_data
+
+    model = build_model(
+        "random_forest",
+        features,
+        random_state=123,
+        model_params={"random_state": 999, "n_estimators": 10},
+    )
+
+    assert model.named_steps["classifier"].random_state == 123
+
+
+def test_tabpfn_missing_dependency_has_install_instructions(sample_data, monkeypatch):
     import builtins
 
     features, target = sample_data
@@ -162,6 +201,7 @@ def test_tabpfn_missing_dependency_has_install_instructions(
 
     with pytest.raises(ImportError, match=r"trusttab\[tabpfn\]"):
         model.fit(features, target)
+
 
 def test_xgboost_integration_when_installed(sample_data):
     pytest.importorskip("xgboost")

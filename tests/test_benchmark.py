@@ -107,7 +107,9 @@ def test_unified_benchmark_combines_scenarios_datasets_models_and_seeds(
     }.issubset(result.columns)
     assert len(fit_calls) == 16  # clean fit once, plus one fit per positive noise level
 
-    baseline = result[result.experiment_type == "clean_baseline"].set_index("baseline_id")
+    baseline = result[result.experiment_type == "clean_baseline"].set_index(
+        "baseline_id"
+    )
     zero_noise = result[
         (result.experiment_type == "label_noise") & (result.corruption_level == 0)
     ].set_index("baseline_id")
@@ -120,6 +122,59 @@ def test_unified_benchmark_combines_scenarios_datasets_models_and_seeds(
     for name, (X, y) in originals.items():
         pd.testing.assert_frame_equal(X, snapshots[name][0])
         pd.testing.assert_series_equal(y, snapshots[name][1])
+
+
+def test_dataset_data_home_is_passed_to_registered_loader(monkeypatch, tmp_path):
+    X, y = _dataset()
+    received = []
+
+    def load_dataset(*, data_home):
+        received.append(data_home)
+        return X, y
+
+    monkeypatch.setitem(benchmark.DATASET_LOADERS, "heart_disease", load_dataset)
+    monkeypatch.setattr(benchmark, "build_model", lambda **kwargs: FakeModel())
+
+    benchmark.run_robustness_benchmark(
+        dataset_names=["heart_disease"],
+        label_noise_levels=[0.0],
+        seeds=[0],
+        model_names=["logistic_regression"],
+        dataset_data_home=tmp_path,
+    )
+
+    assert received == [tmp_path]
+
+
+def test_calibration_status_is_not_applicable_to_unscored_feature_shifts(
+    monkeypatch,
+):
+    X, y = _dataset()
+    monkeypatch.setitem(benchmark.DATASET_LOADERS, "german_credit", lambda: (X, y))
+    monkeypatch.setattr(
+        benchmark,
+        "build_model",
+        lambda **kwargs: FakeModel(),
+    )
+    monkeypatch.setattr(
+        benchmark,
+        "calibrate_fitted_classifier",
+        lambda estimator, *args, **kwargs: estimator,
+    )
+
+    result = benchmark.run_robustness_benchmark(
+        dataset_name="german_credit",
+        label_noise_levels=[0.0],
+        feature_shifts=[{"type": "mean_shift", "features": ["age"], "magnitude": 0.1}],
+        seeds=[0],
+        model_names=["logistic_regression"],
+        calibration_settings={"enabled": True},
+    )
+
+    shifted = result.loc[result["experiment_type"] == "feature_shift"].iloc[0]
+    assert shifted["calibration_status"] == "not_applicable"
+    assert pd.isna(shifted["calibration_method"])
+    assert pd.isna(shifted["calibrated_ece"])
 
 
 def test_benchmark_is_deterministic_and_exports_csv(monkeypatch, tmp_path):
@@ -142,7 +197,12 @@ def test_benchmark_is_deterministic_and_exports_csv(monkeypatch, tmp_path):
     first = benchmark.run_robustness_benchmark(**kwargs)
     output_path = tmp_path / "nested" / "benchmark.csv"
     second = benchmark.run_robustness_benchmark(**kwargs, output_path=output_path)
-    pd.testing.assert_frame_equal(first, second)
+    deterministic_columns = [
+        column for column in first.columns if column != "train_time_seconds"
+    ]
+    pd.testing.assert_frame_equal(first[deterministic_columns], second[deterministic_columns])
+    assert np.isfinite(first["train_time_seconds"].dropna()).all()
+    assert (first["train_time_seconds"].dropna() >= 0).all()
     saved = pd.read_csv(output_path)
     assert len(saved) == len(second)
     assert list(saved.columns) == list(second.columns)
@@ -197,9 +257,17 @@ def test_roc_auc_is_nan_when_test_split_contains_one_class():
 def test_cli_uses_unified_runner_for_combined_configuration(monkeypatch, tmp_path):
     config = {
         "benchmark_mode": "unified",
-        "dataset": {"names": ["german_credit", "adult"]},
+        "dataset": {"names": ["german_credit", "adult"], "data_home": "cache"},
         "experiments": {"seeds": [1], "test_size": 0.2},
         "models": ["logistic_regression"],
+        "model_params": {"logistic_regression": {"max_iter": 123}},
+        "calibration_settings": {
+            "enabled": True,
+            "method": "sigmoid",
+            "train_size": 0.7,
+            "calibration_size": 0.15,
+            "test_size": 0.15,
+        },
         "benchmark_settings": {
             "label_noise_levels": [0.0, 0.2],
             "feature_shifts": {"enabled": False, "types": [], "magnitudes": []},
@@ -217,3 +285,6 @@ def test_cli_uses_unified_runner_for_combined_configuration(monkeypatch, tmp_pat
     experiment_cli.main()
     assert captured["dataset_names"] == ["german_credit", "adult"]
     assert captured["label_noise_levels"] == [0.0, 0.2]
+    assert captured["model_params"] == {"logistic_regression": {"max_iter": 123}}
+    assert captured["calibration_settings"]["enabled"] is True
+    assert captured["dataset_data_home"] == "cache"

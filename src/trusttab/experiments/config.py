@@ -2,13 +2,42 @@
 
 from pathlib import Path
 from typing import Any
+from itertools import product
 
 import yaml
 
 from trusttab.models import SUPPORTED_MODELS
+from trusttab.experiments.calibration_protocol import validate_calibration_settings
 from trusttab.noise import validate_feature_shifts
 
-SUPPORTED_DATASETS = ("german_credit", "adult")
+SUPPORTED_DATASETS = ("german_credit", "heart_disease", "adult")
+
+
+def expand_experiment_conditions(
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Return the label-noise dataset × model × level × seed product.
+
+    ``config`` should be the normalized mapping returned by
+    :func:`load_experiment_config`. This is an enumeration helper; it does
+    not run models or load datasets.
+    """
+
+    dataset_names = config["dataset"].get("names") or [config["dataset"].get("name")]
+    model_names = config["models"]
+    noise_levels = config["benchmark_settings"]["label_noise_levels"]
+    seeds = config["experiments"]["seeds"]
+    return [
+        {
+            "dataset": dataset,
+            "model": model,
+            "noise_level": float(noise_level),
+            "seed": int(seed),
+        }
+        for dataset, model, noise_level, seed in product(
+            dataset_names, model_names, noise_levels, seeds
+        )
+    ]
 
 
 def _validate_noise_levels(levels: Any) -> list[float]:
@@ -158,6 +187,30 @@ def load_experiment_config(
             f"{', '.join(SUPPORTED_DATASETS)}."
         )
 
+    data_home = config["dataset"].get("data_home")
+    if data_home is not None:
+        if isinstance(data_home, str):
+            if not data_home.strip():
+                raise ValueError("dataset.data_home must be a non-empty path string.")
+        elif isinstance(data_home, dict):
+            unsupported_data_home = set(data_home).difference(SUPPORTED_DATASETS)
+            if unsupported_data_home:
+                raise ValueError(
+                    "dataset.data_home contains unsupported dataset names: "
+                    f"{sorted(unsupported_data_home)}."
+                )
+            if any(
+                not isinstance(path, str) or not path.strip()
+                for path in data_home.values()
+            ):
+                raise ValueError(
+                    "Every dataset.data_home value must be a non-empty path string."
+                )
+        else:
+            raise ValueError(
+                "dataset.data_home must be a path string or dataset-to-path mapping."
+            )
+
     experiments = config["experiments"]
 
     if not isinstance(experiments, dict):
@@ -228,9 +281,13 @@ def load_experiment_config(
     elif feature_shifts is not None:
         feature_shift_settings = feature_shifts
 
+    calibration_settings = validate_calibration_settings(experiments.get("calibration"))
+    experiments["calibration"] = calibration_settings
+
     if (
         has_nested_label_noise
         or "feature_shift" in experiments
+        or calibration_settings["enabled"]
         or len(dataset_names) > 1
         or (feature_shifts is not None and has_legacy_noise_levels)
     ):
@@ -244,6 +301,7 @@ def load_experiment_config(
         "label_noise_levels": levels,
         "feature_shifts": feature_shift_settings,
     }
+    config["calibration_settings"] = calibration_settings
 
     test_size = experiments.get("test_size", 0.2)
     seeds = experiments.get("seeds")
@@ -283,6 +341,29 @@ def load_experiment_config(
             f"Unsupported models: {sorted(unsupported_models)}. "
             f"Supported models: {list(SUPPORTED_MODELS)}"
         )
+
+    raw_model_params = config.get("model_params", {})
+    if not isinstance(raw_model_params, dict):
+        raise TypeError("model_params must be a YAML mapping by model name.")
+    unsupported_param_models = set(raw_model_params).difference(SUPPORTED_MODELS)
+    if unsupported_param_models:
+        raise ValueError(
+            "model_params contains unsupported model names: "
+            f"{sorted(unsupported_param_models)}."
+        )
+    model_params: dict[str, dict[str, Any]] = {}
+    for model_name, params in raw_model_params.items():
+        if not isinstance(params, dict):
+            raise TypeError(f"model_params.{model_name} must be a YAML mapping.")
+        if any(not isinstance(name, str) or not name for name in params):
+            raise ValueError(f"model_params.{model_name} keys must be strings.")
+        if "random_state" in params:
+            raise ValueError(
+                f"model_params.{model_name}.random_state is managed by the "
+                "experiment seed streams and must not be set in YAML."
+            )
+        model_params[model_name] = dict(params)
+    config["model_params"] = model_params
 
     if not isinstance(config["output"], dict):
         raise ValueError("output must be a YAML mapping.")

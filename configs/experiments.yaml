@@ -1,33 +1,60 @@
-
 project:
-  name: TrustTab
+  name: TrustTab core label-noise matrix
   version: "0.1.0"
 
 dataset:
-  name: german_credit
+  names:
+    - german_credit
+    - heart_disease
+  data_home:
+    heart_disease: data/raw
 
 experiments:
   test_size: 0.2
-
-  noise_levels:
-    - 0.0
-    - 0.1
-    - 0.2
-    - 0.3
-    - 0.4
-
-  seeds:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
+  label_noise:
+    enabled: true
+    levels: [0.0, 0.1, 0.2, 0.3, 0.4]
+  seeds: [0, 1, 2, 3, 4]
+  calibration:
+    enabled: false
+    method: sigmoid
+    train_size: 0.70
+    calibration_size: 0.15
+    test_size: 0.15
 
 models:
   - logistic_regression
   - random_forest
   - xgboost
+  - tabpfn
+
+# random_state is supplied by the experiment's model_seed stream and must not
+# be set here. TabPFN stays optional and is pinned in pyproject.toml's extra.
+model_params:
+  logistic_regression:
+    max_iter: 1000
+  random_forest:
+    n_estimators: 300
+    n_jobs: -1
+  xgboost:
+    n_estimators: 300
+    max_depth: 4
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    eval_metric: logloss
+    n_jobs: -1
+  tabpfn:
+    device: cpu
+    show_progress_bar: false
 
 output:
   directory: results
-  filename: stress_test_results.csv
+  filename: core_matrix_results.csv
+
+# Preserve a per-execution manifest, normalized configuration, environment,
+# dataset fingerprints, raw rows, and generated reports for the full run.
+tracking:
+  enabled: true
+  directory: experiments/runs
+  experiment_name: trusttab-core-matrix

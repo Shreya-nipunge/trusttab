@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 
 from trusttab.evaluation import evaluate_classifier
 from trusttab.experiments.runner import DATASET_LOADERS, MetricEvaluator
+from trusttab.experiments.seeding import derive_seed
 from trusttab.models import build_model
 from trusttab.noise import apply_feature_shifts, validate_feature_shifts
 
@@ -66,11 +67,12 @@ def run_feature_shift_test(
     records = []
 
     for seed in seeds:
+        split_seed = derive_seed(seed, "split", dataset_name)
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
             test_size=test_size,
-            random_state=int(seed),
+            random_state=split_seed,
             stratify=y,
         )
         scenarios = [
@@ -85,10 +87,13 @@ def run_feature_shift_test(
             }
         ]
         for index, spec in enumerate(shifts):
-            shift_seed = int(
-                np.random.SeedSequence([int(seed), index]).generate_state(
-                    1, dtype=np.uint32
-                )[0]
+            shift_seed = derive_seed(
+                seed,
+                "feature_shift",
+                dataset_name,
+                index,
+                spec["type"],
+                float(spec["magnitude"]).hex(),
             )
             scenarios.append(
                 {
@@ -103,11 +108,12 @@ def run_feature_shift_test(
             )
 
         for model_name in model_names:
+            model_seed = derive_seed(seed, "model", dataset_name, model_name)
             params = model_params.get(model_name, {}) if model_params else {}
             model = build_model(
                 model_name=model_name,
                 features=X_train,
-                random_state=int(seed),
+                random_state=model_seed,
                 model_params=params,
             )
             model.fit(X_train, y_train)
@@ -123,6 +129,8 @@ def run_feature_shift_test(
                         "dataset": dataset_name,
                         "model": model_name,
                         "seed": int(seed),
+                        "split_seed": split_seed,
+                        "model_seed": model_seed,
                         "scenario": scenario["scenario"],
                         "shift_index": scenario["shift_index"],
                         "shift_type": scenario["shift_type"],

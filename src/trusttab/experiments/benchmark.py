@@ -1,7 +1,9 @@
 """Unified robustness benchmark orchestration."""
 
 from collections.abc import Callable, Mapping, Sequence
+import json
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import numpy as np
@@ -12,12 +14,18 @@ from sklearn.model_selection import train_test_split
 
 from trusttab.evaluation import (
     adaptive_expected_calibration_error,
+    calibrate_fitted_classifier,
     evaluate_classifier,
     expected_calibration_error,
     log_loss_score,
     maximum_calibration_error,
 )
 from trusttab.experiments.runner import DATASET_LOADERS, MetricEvaluator
+from trusttab.experiments.calibration_protocol import (
+    validate_calibration_settings,
+)
+from trusttab.experiments.seeding import derive_seed
+from trusttab.experiments.splitting import split_train_calibration_test
 from trusttab.models import build_model
 from trusttab.noise import (
     apply_feature_shifts,
@@ -36,6 +44,9 @@ BENCHMARK_METRIC_COLUMNS = (
     "mce",
     "log_loss",
 )
+CALIBRATED_METRIC_COLUMNS = tuple(
+    f"calibrated_{metric}" for metric in BENCHMARK_METRIC_COLUMNS
+)
 
 BENCHMARK_RESULT_COLUMNS = (
     "dataset",
@@ -44,13 +55,28 @@ BENCHMARK_RESULT_COLUMNS = (
     "corruption_type",
     "corruption_level",
     "seed",
+    "split_seed",
+    "noise_seed",
+    "model_seed",
     *BENCHMARK_METRIC_COLUMNS,
     "n_train",
     "n_test",
     "baseline_id",
     "affected_features",
     "n_corrupted",
+    "train_time_seconds",
     "shift_seed",
+    "condition_id",
+    "calibration_method",
+    "calibration_status",
+    "calibration_error",
+    "calibration_split_seed",
+    "n_calibration",
+    "split_train_fraction",
+    "split_calibration_fraction",
+    "split_test_fraction",
+    "model_params",
+    *CALIBRATED_METRIC_COLUMNS,
 )
 
 
@@ -168,8 +194,29 @@ def _evaluate(
     model, X_test, y_test, metric_evaluator: MetricEvaluator
 ) -> dict[str, float]:
     predictions = model.predict(X_test)
-    probabilities = model.predict_proba(X_test)
-    positive_index = list(model.classes_).index(1)
+    if not callable(getattr(model, "predict_proba", None)):
+        raise TypeError(
+            f"{type(model).__name__} must expose predict_proba for raw ECE and "
+            "Brier Score. CalibratedClassifierCV can fit from decision_function "
+            "when available, but raw probability metrics require probabilities."
+        )
+    probabilities = np.asarray(model.predict_proba(X_test), dtype=float)
+    classes = list(model.classes_)
+    if probabilities.ndim != 2 or probabilities.shape != (len(y_test), len(classes)):
+        raise ValueError(
+            "predict_proba must return one probability column per class and "
+            "one row per evaluation observation."
+        )
+    if len(classes) != 2 or set(classes) != {0, 1}:
+        raise ValueError("Calibration evaluation requires classes 0 and 1.")
+    if (
+        not np.isfinite(probabilities).all()
+        or np.any(probabilities < 0)
+        or np.any(probabilities > 1)
+        or not np.allclose(probabilities.sum(axis=1), 1.0, atol=1e-6)
+    ):
+        raise ValueError("predict_proba must return finite, normalized probabilities.")
+    positive_index = classes.index(1)
     positive_probabilities = probabilities[:, positive_index]
     if metric_evaluator is evaluate_classifier and np.unique(y_test).size < 2:
         # ROC-AUC is undefined for one target class; preserve the remaining
@@ -223,7 +270,10 @@ def _run_robustness_benchmark(
     output_path: str | Path | None = None,
     metric_evaluator: MetricEvaluator | None = None,
     model_params: dict[str, dict[str, Any]] | None = None,
+    calibration_settings: Mapping[str, Any] | None = None,
+    dataset_data_home: str | Path | Mapping[str, str | Path] | None = None,
     _dataset_callback: Callable[[str, pd.DataFrame, pd.Series], None] | None = None,
+    _result_callback: Callable[[dict[str, Any]], None] | None = None,
 ) -> pd.DataFrame:
     """Run clean, label-noise, and feature-shift evaluations in one result table.
 
@@ -245,6 +295,7 @@ def _run_robustness_benchmark(
         else [dataset_name or "german_credit"]
     )
     levels = list(label_noise_levels)
+    calibration = validate_calibration_settings(calibration_settings)
     _validate_values(
         dataset_names=datasets,
         seeds=seeds,
@@ -257,24 +308,60 @@ def _run_robustness_benchmark(
     records: list[dict[str, Any]] = []
 
     for name in datasets:
-        X, y = DATASET_LOADERS[name]()
+        loader = DATASET_LOADERS[name]
+        loader_data_home = (
+            dataset_data_home.get(name)
+            if isinstance(dataset_data_home, Mapping)
+            else dataset_data_home
+        )
+        if loader_data_home is None:
+            X, y = loader()
+        else:
+            X, y = loader(data_home=loader_data_home)
         if _dataset_callback is not None:
             _dataset_callback(name, X, y)
         for seed in seeds:
-            X_train, X_test, y_train, y_test = train_test_split(
-                X,
-                y,
-                test_size=test_size,
-                random_state=int(seed),
-                stratify=y,
-            )
+            split_seed = derive_seed(seed, "split", name)
+            if calibration["enabled"]:
+                calibration_split_seed = derive_seed(seed, "calibration_split", name)
+                (
+                    X_train,
+                    X_calibration,
+                    X_test,
+                    y_train,
+                    y_calibration,
+                    y_test,
+                ) = split_train_calibration_test(
+                    X,
+                    y,
+                    split_seed=split_seed,
+                    calibration_split_seed=calibration_split_seed,
+                    train_size=calibration["train_size"],
+                    calibration_size=calibration["calibration_size"],
+                    test_size=calibration["test_size"],
+                )
+                n_calibration = len(X_calibration)
+            else:
+                calibration_split_seed = None
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X,
+                    y,
+                    test_size=test_size,
+                    random_state=split_seed,
+                    stratify=y,
+                )
+                X_calibration = y_calibration = None
+                n_calibration = 0
             specs = _feature_specs_for_data(X_test, feature_shifts)
             shifted_tests = []
             for shift_index, spec in enumerate(specs):
-                shift_seed = int(
-                    np.random.SeedSequence([int(seed), shift_index]).generate_state(
-                        1, dtype=np.uint32
-                    )[0]
+                shift_seed = derive_seed(
+                    seed,
+                    "feature_shift",
+                    name,
+                    shift_index,
+                    spec["type"],
+                    float(spec["magnitude"]).hex(),
                 )
                 shifted_tests.append(
                     {
@@ -285,16 +372,46 @@ def _run_robustness_benchmark(
                 )
 
             for model_name in model_names:
+                model_seed = derive_seed(seed, "model", name, model_name)
                 params = model_params.get(model_name, {}) if model_params else {}
+                baseline_started = perf_counter()
                 baseline_model = build_model(
                     model_name=model_name,
                     features=X_train,
-                    random_state=int(seed),
+                    random_state=model_seed,
                     model_params=params,
                 )
                 baseline_model.fit(X_train, y_train)
-                baseline_metrics = _evaluate(baseline_model, X_test, y_test, evaluator)
+                baseline_train_seconds = perf_counter() - baseline_started
                 baseline_id = f"{name}:{model_name}:{seed}"
+
+                baseline_calibrated_model = None
+                baseline_calibrated_metrics = None
+                baseline_calibration_error = None
+                if calibration["enabled"]:
+                    try:
+                        baseline_calibrated_model = calibrate_fitted_classifier(
+                            baseline_model,
+                            X_calibration,
+                            y_calibration,
+                            method=calibration["method"],
+                        )
+                        baseline_calibrated_metrics = _evaluate(
+                            baseline_calibrated_model,
+                            X_test,
+                            y_test,
+                            evaluator,
+                        )
+                    except Exception as exc:
+                        baseline_calibration_error = f"{type(exc).__name__}: {exc}"
+                        baseline_calibrated_model = None
+                        baseline_calibrated_metrics = {
+                            metric: np.nan for metric in BENCHMARK_METRIC_COLUMNS
+                        }
+
+                # In calibration mode, the calibrator is fitted before either
+                # raw or calibrated test metrics are evaluated.
+                baseline_metrics = _evaluate(baseline_model, X_test, y_test, evaluator)
 
                 def add_record(
                     experiment_type: str,
@@ -304,56 +421,156 @@ def _run_robustness_benchmark(
                     *,
                     affected_features: str = "",
                     n_corrupted: int = 0,
+                    train_time_seconds: float | None = None,
                     shift_seed: int | None = None,
+                    noise_seed: int | None = None,
+                    model_seed_value: int = model_seed,
+                    split_seed_value: int = split_seed,
                     dataset_value: str = name,
                     model_value: str = model_name,
                     seed_value: int = int(seed),
                     train_count: int = len(X_train),
                     test_count: int = len(y_test),
                     baseline_value: str = baseline_id,
+                    condition_id_value: str = "",
+                    calibrated_metrics_value: dict[str, float] | None = None,
+                    calibration_method_value: str | None = (
+                        calibration["method"] if calibration["enabled"] else None
+                    ),
+                    calibration_status_value: str = (
+                        "succeeded" if calibration["enabled"] else "disabled"
+                    ),
+                    calibration_error_value: str | None = None,
+                    calibration_split_seed_value: int | None = calibration_split_seed,
+                    calibration_count: int = n_calibration,
+                    train_fraction: float | None = (
+                        calibration["train_size"] if calibration["enabled"] else None
+                    ),
+                    calibration_fraction: float | None = (
+                        calibration["calibration_size"]
+                        if calibration["enabled"]
+                        else None
+                    ),
+                    test_fraction: float | None = (
+                        calibration["test_size"] if calibration["enabled"] else None
+                    ),
                 ) -> None:
-                    records.append(
-                        {
-                            "dataset": dataset_value,
-                            "model": model_value,
-                            "experiment_type": experiment_type,
-                            "corruption_type": corruption_type,
-                            "corruption_level": float(corruption_level),
-                            "seed": seed_value,
-                            **metrics,
-                            "n_train": train_count,
-                            "n_test": test_count,
-                            "baseline_id": baseline_value,
-                            "affected_features": affected_features,
-                            "n_corrupted": n_corrupted,
-                            "shift_seed": shift_seed,
-                        }
-                    )
+                    record = {
+                        "dataset": dataset_value,
+                        "model": model_value,
+                        "experiment_type": experiment_type,
+                        "corruption_type": corruption_type,
+                        "corruption_level": float(corruption_level),
+                        "seed": seed_value,
+                        "split_seed": split_seed_value,
+                        "noise_seed": noise_seed,
+                        "model_seed": model_seed_value,
+                        **metrics,
+                        "n_train": train_count,
+                        "n_test": test_count,
+                        "baseline_id": baseline_value,
+                        "affected_features": affected_features,
+                        "n_corrupted": n_corrupted,
+                        "train_time_seconds": train_time_seconds,
+                        "shift_seed": shift_seed,
+                        "condition_id": condition_id_value,
+                        "calibration_method": calibration_method_value,
+                        "calibration_status": calibration_status_value,
+                        "calibration_error": calibration_error_value,
+                        "calibration_split_seed": calibration_split_seed_value,
+                        "n_calibration": calibration_count,
+                        "split_train_fraction": train_fraction,
+                        "split_calibration_fraction": calibration_fraction,
+                        "split_test_fraction": test_fraction,
+                        "model_params": json.dumps(params, sort_keys=True, default=str),
+                        **{
+                            f"calibrated_{metric}": (
+                                calibrated_metrics_value.get(metric, np.nan)
+                                if calibrated_metrics_value is not None
+                                else np.nan
+                            )
+                            for metric in BENCHMARK_METRIC_COLUMNS
+                        },
+                    }
+                    records.append(record)
+                    if _result_callback is not None:
+                        _result_callback(record.copy())
 
-                add_record("clean_baseline", "none", 0.0, baseline_metrics)
+                add_record(
+                    "clean_baseline",
+                    "none",
+                    0.0,
+                    baseline_metrics,
+                    train_time_seconds=baseline_train_seconds,
+                    model_seed_value=model_seed,
+                    condition_id_value=f"baseline:{baseline_id}",
+                    calibrated_metrics_value=baseline_calibrated_metrics,
+                    calibration_status_value=(
+                        "failed"
+                        if baseline_calibration_error is not None
+                        else ("succeeded" if calibration["enabled"] else "disabled")
+                    ),
+                    calibration_error_value=baseline_calibration_error,
+                )
 
                 for level in levels:
+                    noise_seed = derive_seed(
+                        seed, "label_noise", name, float(level).hex()
+                    )
                     if level == 0:
                         model = baseline_model
                         corrupted_count = 0
+                        model_train_seconds = baseline_train_seconds
+                        calibrated_model = baseline_calibrated_model
+                        calibrated_metrics = baseline_calibrated_metrics
+                        calibration_error = baseline_calibration_error
                     else:
                         noisy_y = inject_symmetric_label_noise(
-                            y_train, float(level), seed=int(seed)
+                            y_train, float(level), seed=noise_seed
                         )
                         corrupted_count = int(
                             np.sum(np.asarray(noisy_y) != np.asarray(y_train))
                         )
+                        model_started = perf_counter()
                         model = build_model(
                             model_name=model_name,
                             features=X_train,
-                            random_state=int(seed),
+                            random_state=model_seed,
                             model_params=params,
                         )
                         model.fit(X_train, noisy_y)
+                        model_train_seconds = perf_counter() - model_started
+                        calibrated_model = None
+                        calibrated_metrics = None
+                        calibration_error = None
+                        if calibration["enabled"]:
+                            try:
+                                calibrated_model = calibrate_fitted_classifier(
+                                    model,
+                                    X_calibration,
+                                    y_calibration,
+                                    method=calibration["method"],
+                                )
+                                calibrated_metrics = _evaluate(
+                                    calibrated_model,
+                                    X_test,
+                                    y_test,
+                                    evaluator,
+                                )
+                            except Exception as exc:
+                                calibration_error = f"{type(exc).__name__}: {exc}"
+                                calibrated_model = None
+                                calibrated_metrics = {
+                                    metric: np.nan
+                                    for metric in BENCHMARK_METRIC_COLUMNS
+                                }
                     metrics = (
                         baseline_metrics
                         if level == 0
                         else _evaluate(model, X_test, y_test, evaluator)
+                    )
+                    condition_id = (
+                        f"{name}:{model_name}:{float(level).hex()}:{int(seed)}"
                     )
                     add_record(
                         "label_noise",
@@ -361,6 +578,17 @@ def _run_robustness_benchmark(
                         float(level),
                         metrics,
                         n_corrupted=corrupted_count,
+                        train_time_seconds=model_train_seconds,
+                        noise_seed=noise_seed,
+                        model_seed_value=model_seed,
+                        condition_id_value=condition_id,
+                        calibrated_metrics_value=calibrated_metrics,
+                        calibration_status_value=(
+                            "failed"
+                            if calibration_error is not None
+                            else ("succeeded" if calibration["enabled"] else "disabled")
+                        ),
+                        calibration_error_value=calibration_error,
                     )
 
                 for shifted in shifted_tests:
@@ -375,6 +603,11 @@ def _run_robustness_benchmark(
                         metrics,
                         affected_features=",".join(spec["features"]),
                         shift_seed=shifted["shift_seed"],
+                        model_seed_value=model_seed,
+                        calibration_method_value=None,
+                        calibration_status_value=(
+                            "not_applicable" if calibration["enabled"] else "disabled"
+                        ),
                     )
 
     results = pd.DataFrame.from_records(records, columns=BENCHMARK_RESULT_COLUMNS)
@@ -397,10 +630,13 @@ def run_robustness_benchmark(
     output_path: str | Path | None = None,
     metric_evaluator: MetricEvaluator | None = None,
     model_params: dict[str, dict[str, Any]] | None = None,
+    calibration_settings: Mapping[str, Any] | None = None,
+    dataset_data_home: str | Path | Mapping[str, str | Path] | None = None,
     tracking_dir: str | Path | None = None,
     experiment_name: str | None = None,
     original_config: Any = None,
     normalized_config: Any = None,
+    _result_callback: Callable[[dict[str, Any]], None] | None = None,
 ) -> pd.DataFrame:
     """Run the robustness benchmark, optionally recording a local experiment.
 
@@ -421,6 +657,8 @@ def run_robustness_benchmark(
             "seeds": list(seeds),
             "models": list(model_names),
             "model_params": model_params or {},
+            "calibration_settings": calibration_settings,
+            "dataset_data_home": dataset_data_home,
             "test_size": test_size,
             "output_path": output_path,
             "metric_evaluator": (
@@ -462,7 +700,10 @@ def run_robustness_benchmark(
             output_path=output_path,
             metric_evaluator=metric_evaluator,
             model_params=model_params,
+            calibration_settings=calibration_settings,
+            dataset_data_home=dataset_data_home,
             _dataset_callback=callback,
+            _result_callback=_result_callback,
         )
         if tracker is not None:
             tracker.complete(results)

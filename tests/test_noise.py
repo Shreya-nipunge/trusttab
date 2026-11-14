@@ -23,12 +23,13 @@ def test_full_noise_changes_every_label():
     assert np.all(result != y)
 
 
-def test_exact_number_of_labels_are_corrupted():
-    y = np.array([0, 1] * 50)
+def test_noise_count_is_random_around_the_expected_value():
+    y = np.tile([0, 1], 10_000)
 
     result = inject_symmetric_label_noise(y, 0.2, seed=42)
 
-    assert np.sum(result != y) == 20
+    flipped = np.sum(result != y)
+    assert abs(flipped / len(y) - 0.2) < 0.02
 
 
 def test_noise_is_reproducible():
@@ -107,3 +108,18 @@ def test_missing_labels_are_rejected():
 
     with pytest.raises(ValueError):
         inject_symmetric_label_noise(y, 0.1, seed=42)
+
+
+def test_multidimensional_labels_are_rejected():
+    y = np.array([[0, 1], [1, 0]])
+
+    with pytest.raises(ValueError, match="one-dimensional"):
+        inject_symmetric_label_noise(y, 0.1, seed=42)
+
+
+@pytest.mark.parametrize("noise_rate", [np.nan, np.inf, -np.inf])
+def test_non_finite_noise_rates_are_rejected(noise_rate):
+    y = np.array([0, 1])
+
+    with pytest.raises(ValueError):
+        inject_symmetric_label_noise(y, noise_rate, seed=42)
