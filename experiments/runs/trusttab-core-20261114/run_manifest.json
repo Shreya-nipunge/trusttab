@@ -1,0 +1,1335 @@
+{
+  "conditions": {
+    "german_credit:logistic_regression:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:09.924942Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:10.953515Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:11.957104Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:12.960771Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:14.190346Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:10.450063Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:11.468870Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:12.504051Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:13.651105Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:14.834563Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:10.684877Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:11.641827Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:12.675924Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:13.864792Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:15.008349Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:10.256199Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:11.301456Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:12.312183Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:13.358342Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:14.586587Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:10.085849Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:11.107014Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:12.138540Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:13.155793Z",
+      "status": "succeeded"
+    },
+    "german_credit:logistic_regression:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:14.355469Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:16.758586Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:24.349184Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:31.850662Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:39.463938Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:47.028478Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:21.324983Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:28.862143Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:36.258708Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:43.951359Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:51.110065Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:22.793709Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:30.345178Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:37.652122Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:45.599736Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:52.564137Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:19.704855Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:27.307535Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:34.810454Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:42.383920Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:49.672235Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:18.265536Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:25.834412Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:33.232931Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:40.947591Z",
+      "status": "succeeded"
+    },
+    "german_credit:random_forest:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:48.349531Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:44:45.257187Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:54:46.463645Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:04:57.523445Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:15:19.874084Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:26:17.361565Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:50:42.421454Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:00:54.809041Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:11:00.989488Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:22:03.570677Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:32:54.563830Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:52:46.272279Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:02:57.364265Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:13:04.549934Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:24:11.566469Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:01.946773Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:48:41.135335Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:58:51.606292Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:08:52.991527Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:19:54.643946Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:30:46.811555Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:46:39.476978Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:56:50.055533Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:07:06.039328Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:17:36.833979Z",
+      "status": "succeeded"
+    },
+    "german_credit:tabpfn:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:28:35.755774Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:56.752329Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:00.687142Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:04.488473Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:08.219895Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:11.998407Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:58.880721Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:02.932255Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:06.610820Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:10.342848Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:14.179072Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:59.652466Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:03.654057Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:07.392845Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:11.068478Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:14.912461Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:58.219316Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:02.150477Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:05.909883Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:09.599926Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:13.469972Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:41:57.493296Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:01.384281Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:05.184928Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:08.881829Z",
+      "status": "succeeded"
+    },
+    "german_credit:xgboost:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T15:42:12.665854Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:02.452541Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:03.200363Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:04.154954Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:05.145448Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:06.056761Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:02.853781Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:03.713158Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:04.612771Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:05.656233Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:06.445365Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:02.991596Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:03.911340Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:04.809959Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:05.824280Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:06.586632Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:02.723087Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:03.514447Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:04.450885Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:05.487241Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:06.299075Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:02.593453Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:03.344481Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:04.302512Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:05.286904Z",
+      "status": "succeeded"
+    },
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:06.174589Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:07.918743Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:14.348250Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:21.592378Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:28.450588Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:34.948871Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:11.491363Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:18.594367Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:25.413649Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:32.273518Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:38.835083Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:12.878215Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:20.046524Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:26.774249Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:33.586298Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:40.069015Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:10.025400Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:17.195644Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:24.133182Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:30.959816Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:37.540526Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:08.794054Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:15.794541Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:22.898242Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:29.719035Z",
+      "status": "succeeded"
+    },
+    "heart_disease:random_forest:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:36.190347Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:36:29.139806Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:39:02.975324Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:41:33.108070Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:44:03.200320Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:46:31.303422Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:38:01.075611Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:40:32.123356Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:43:03.817928Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:45:31.962230Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:48:00.786528Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:38:32.043440Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:41:02.382708Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:43:33.601517Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:46:01.501853Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:48:30.505151Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:37:30.090700Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:40:02.018881Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:42:33.231256Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:45:01.964555Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:47:30.216452Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:36:59.406333Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:39:31.904158Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:42:03.219856Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:44:32.166242Z",
+      "status": "succeeded"
+    },
+    "heart_disease:tabpfn:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:47:00.601291Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x0.0p+0:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:40.821475Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x0.0p+0:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:44.428121Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x0.0p+0:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:47.826368Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x0.0p+0:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:51.401697Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x0.0p+0:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:54.819652Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.3333333333333p-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:42.936407Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.3333333333333p-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:46.413375Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.3333333333333p-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:49.853293Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.3333333333333p-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:53.438162Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.3333333333333p-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:56.764700Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-2:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:43.689042Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-2:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:47.071528Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-2:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:50.574801Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-2:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:54.078035Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-2:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:57.456692Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-3:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:42.230278Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-3:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:45.779667Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-3:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:49.165302Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-3:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:52.743269Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-3:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:56.109890Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-4:0": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:41.534723Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-4:1": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:45.095704Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-4:2": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:48.498069Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-4:3": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:52.081749Z",
+      "status": "succeeded"
+    },
+    "heart_disease:xgboost:0x1.999999999999ap-4:4": {
+      "attempts": 1,
+      "completed_at": "2026-11-14T16:35:55.445429Z",
+      "status": "succeeded"
+    }
+  },
+  "config_hash": "f1f8d9f3bac2bdc614f6d956c96da839bc9453e04e3a61198862d4b4598afeb3",
+  "created_at": "2026-11-14T15:41:09.687448Z",
+  "dataset_fingerprints": {
+    "german_credit": "be2da28ee0a92114ae07549c876cb414e1dd2ead0a56fa9e19dc1535c4ac6fa6",
+    "heart_disease": "d9ed8e3110da6747811725a53fb068be2bd233684c011b44563bc93e6517dd27"
+  },
+  "expected_condition_ids": [
+    "german_credit:logistic_regression:0x0.0p+0:0",
+    "german_credit:logistic_regression:0x0.0p+0:1",
+    "german_credit:logistic_regression:0x0.0p+0:2",
+    "german_credit:logistic_regression:0x0.0p+0:3",
+    "german_credit:logistic_regression:0x0.0p+0:4",
+    "german_credit:logistic_regression:0x1.999999999999ap-4:0",
+    "german_credit:logistic_regression:0x1.999999999999ap-4:1",
+    "german_credit:logistic_regression:0x1.999999999999ap-4:2",
+    "german_credit:logistic_regression:0x1.999999999999ap-4:3",
+    "german_credit:logistic_regression:0x1.999999999999ap-4:4",
+    "german_credit:logistic_regression:0x1.999999999999ap-3:0",
+    "german_credit:logistic_regression:0x1.999999999999ap-3:1",
+    "german_credit:logistic_regression:0x1.999999999999ap-3:2",
+    "german_credit:logistic_regression:0x1.999999999999ap-3:3",
+    "german_credit:logistic_regression:0x1.999999999999ap-3:4",
+    "german_credit:logistic_regression:0x1.3333333333333p-2:0",
+    "german_credit:logistic_regression:0x1.3333333333333p-2:1",
+    "german_credit:logistic_regression:0x1.3333333333333p-2:2",
+    "german_credit:logistic_regression:0x1.3333333333333p-2:3",
+    "german_credit:logistic_regression:0x1.3333333333333p-2:4",
+    "german_credit:logistic_regression:0x1.999999999999ap-2:0",
+    "german_credit:logistic_regression:0x1.999999999999ap-2:1",
+    "german_credit:logistic_regression:0x1.999999999999ap-2:2",
+    "german_credit:logistic_regression:0x1.999999999999ap-2:3",
+    "german_credit:logistic_regression:0x1.999999999999ap-2:4",
+    "german_credit:random_forest:0x0.0p+0:0",
+    "german_credit:random_forest:0x0.0p+0:1",
+    "german_credit:random_forest:0x0.0p+0:2",
+    "german_credit:random_forest:0x0.0p+0:3",
+    "german_credit:random_forest:0x0.0p+0:4",
+    "german_credit:random_forest:0x1.999999999999ap-4:0",
+    "german_credit:random_forest:0x1.999999999999ap-4:1",
+    "german_credit:random_forest:0x1.999999999999ap-4:2",
+    "german_credit:random_forest:0x1.999999999999ap-4:3",
+    "german_credit:random_forest:0x1.999999999999ap-4:4",
+    "german_credit:random_forest:0x1.999999999999ap-3:0",
+    "german_credit:random_forest:0x1.999999999999ap-3:1",
+    "german_credit:random_forest:0x1.999999999999ap-3:2",
+    "german_credit:random_forest:0x1.999999999999ap-3:3",
+    "german_credit:random_forest:0x1.999999999999ap-3:4",
+    "german_credit:random_forest:0x1.3333333333333p-2:0",
+    "german_credit:random_forest:0x1.3333333333333p-2:1",
+    "german_credit:random_forest:0x1.3333333333333p-2:2",
+    "german_credit:random_forest:0x1.3333333333333p-2:3",
+    "german_credit:random_forest:0x1.3333333333333p-2:4",
+    "german_credit:random_forest:0x1.999999999999ap-2:0",
+    "german_credit:random_forest:0x1.999999999999ap-2:1",
+    "german_credit:random_forest:0x1.999999999999ap-2:2",
+    "german_credit:random_forest:0x1.999999999999ap-2:3",
+    "german_credit:random_forest:0x1.999999999999ap-2:4",
+    "german_credit:xgboost:0x0.0p+0:0",
+    "german_credit:xgboost:0x0.0p+0:1",
+    "german_credit:xgboost:0x0.0p+0:2",
+    "german_credit:xgboost:0x0.0p+0:3",
+    "german_credit:xgboost:0x0.0p+0:4",
+    "german_credit:xgboost:0x1.999999999999ap-4:0",
+    "german_credit:xgboost:0x1.999999999999ap-4:1",
+    "german_credit:xgboost:0x1.999999999999ap-4:2",
+    "german_credit:xgboost:0x1.999999999999ap-4:3",
+    "german_credit:xgboost:0x1.999999999999ap-4:4",
+    "german_credit:xgboost:0x1.999999999999ap-3:0",
+    "german_credit:xgboost:0x1.999999999999ap-3:1",
+    "german_credit:xgboost:0x1.999999999999ap-3:2",
+    "german_credit:xgboost:0x1.999999999999ap-3:3",
+    "german_credit:xgboost:0x1.999999999999ap-3:4",
+    "german_credit:xgboost:0x1.3333333333333p-2:0",
+    "german_credit:xgboost:0x1.3333333333333p-2:1",
+    "german_credit:xgboost:0x1.3333333333333p-2:2",
+    "german_credit:xgboost:0x1.3333333333333p-2:3",
+    "german_credit:xgboost:0x1.3333333333333p-2:4",
+    "german_credit:xgboost:0x1.999999999999ap-2:0",
+    "german_credit:xgboost:0x1.999999999999ap-2:1",
+    "german_credit:xgboost:0x1.999999999999ap-2:2",
+    "german_credit:xgboost:0x1.999999999999ap-2:3",
+    "german_credit:xgboost:0x1.999999999999ap-2:4",
+    "german_credit:tabpfn:0x0.0p+0:0",
+    "german_credit:tabpfn:0x0.0p+0:1",
+    "german_credit:tabpfn:0x0.0p+0:2",
+    "german_credit:tabpfn:0x0.0p+0:3",
+    "german_credit:tabpfn:0x0.0p+0:4",
+    "german_credit:tabpfn:0x1.999999999999ap-4:0",
+    "german_credit:tabpfn:0x1.999999999999ap-4:1",
+    "german_credit:tabpfn:0x1.999999999999ap-4:2",
+    "german_credit:tabpfn:0x1.999999999999ap-4:3",
+    "german_credit:tabpfn:0x1.999999999999ap-4:4",
+    "german_credit:tabpfn:0x1.999999999999ap-3:0",
+    "german_credit:tabpfn:0x1.999999999999ap-3:1",
+    "german_credit:tabpfn:0x1.999999999999ap-3:2",
+    "german_credit:tabpfn:0x1.999999999999ap-3:3",
+    "german_credit:tabpfn:0x1.999999999999ap-3:4",
+    "german_credit:tabpfn:0x1.3333333333333p-2:0",
+    "german_credit:tabpfn:0x1.3333333333333p-2:1",
+    "german_credit:tabpfn:0x1.3333333333333p-2:2",
+    "german_credit:tabpfn:0x1.3333333333333p-2:3",
+    "german_credit:tabpfn:0x1.3333333333333p-2:4",
+    "german_credit:tabpfn:0x1.999999999999ap-2:0",
+    "german_credit:tabpfn:0x1.999999999999ap-2:1",
+    "german_credit:tabpfn:0x1.999999999999ap-2:2",
+    "german_credit:tabpfn:0x1.999999999999ap-2:3",
+    "german_credit:tabpfn:0x1.999999999999ap-2:4",
+    "heart_disease:logistic_regression:0x0.0p+0:0",
+    "heart_disease:logistic_regression:0x0.0p+0:1",
+    "heart_disease:logistic_regression:0x0.0p+0:2",
+    "heart_disease:logistic_regression:0x0.0p+0:3",
+    "heart_disease:logistic_regression:0x0.0p+0:4",
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:0",
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:1",
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:2",
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:3",
+    "heart_disease:logistic_regression:0x1.999999999999ap-4:4",
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:0",
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:1",
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:2",
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:3",
+    "heart_disease:logistic_regression:0x1.999999999999ap-3:4",
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:0",
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:1",
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:2",
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:3",
+    "heart_disease:logistic_regression:0x1.3333333333333p-2:4",
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:0",
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:1",
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:2",
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:3",
+    "heart_disease:logistic_regression:0x1.999999999999ap-2:4",
+    "heart_disease:random_forest:0x0.0p+0:0",
+    "heart_disease:random_forest:0x0.0p+0:1",
+    "heart_disease:random_forest:0x0.0p+0:2",
+    "heart_disease:random_forest:0x0.0p+0:3",
+    "heart_disease:random_forest:0x0.0p+0:4",
+    "heart_disease:random_forest:0x1.999999999999ap-4:0",
+    "heart_disease:random_forest:0x1.999999999999ap-4:1",
+    "heart_disease:random_forest:0x1.999999999999ap-4:2",
+    "heart_disease:random_forest:0x1.999999999999ap-4:3",
+    "heart_disease:random_forest:0x1.999999999999ap-4:4",
+    "heart_disease:random_forest:0x1.999999999999ap-3:0",
+    "heart_disease:random_forest:0x1.999999999999ap-3:1",
+    "heart_disease:random_forest:0x1.999999999999ap-3:2",
+    "heart_disease:random_forest:0x1.999999999999ap-3:3",
+    "heart_disease:random_forest:0x1.999999999999ap-3:4",
+    "heart_disease:random_forest:0x1.3333333333333p-2:0",
+    "heart_disease:random_forest:0x1.3333333333333p-2:1",
+    "heart_disease:random_forest:0x1.3333333333333p-2:2",
+    "heart_disease:random_forest:0x1.3333333333333p-2:3",
+    "heart_disease:random_forest:0x1.3333333333333p-2:4",
+    "heart_disease:random_forest:0x1.999999999999ap-2:0",
+    "heart_disease:random_forest:0x1.999999999999ap-2:1",
+    "heart_disease:random_forest:0x1.999999999999ap-2:2",
+    "heart_disease:random_forest:0x1.999999999999ap-2:3",
+    "heart_disease:random_forest:0x1.999999999999ap-2:4",
+    "heart_disease:xgboost:0x0.0p+0:0",
+    "heart_disease:xgboost:0x0.0p+0:1",
+    "heart_disease:xgboost:0x0.0p+0:2",
+    "heart_disease:xgboost:0x0.0p+0:3",
+    "heart_disease:xgboost:0x0.0p+0:4",
+    "heart_disease:xgboost:0x1.999999999999ap-4:0",
+    "heart_disease:xgboost:0x1.999999999999ap-4:1",
+    "heart_disease:xgboost:0x1.999999999999ap-4:2",
+    "heart_disease:xgboost:0x1.999999999999ap-4:3",
+    "heart_disease:xgboost:0x1.999999999999ap-4:4",
+    "heart_disease:xgboost:0x1.999999999999ap-3:0",
+    "heart_disease:xgboost:0x1.999999999999ap-3:1",
+    "heart_disease:xgboost:0x1.999999999999ap-3:2",
+    "heart_disease:xgboost:0x1.999999999999ap-3:3",
+    "heart_disease:xgboost:0x1.999999999999ap-3:4",
+    "heart_disease:xgboost:0x1.3333333333333p-2:0",
+    "heart_disease:xgboost:0x1.3333333333333p-2:1",
+    "heart_disease:xgboost:0x1.3333333333333p-2:2",
+    "heart_disease:xgboost:0x1.3333333333333p-2:3",
+    "heart_disease:xgboost:0x1.3333333333333p-2:4",
+    "heart_disease:xgboost:0x1.999999999999ap-2:0",
+    "heart_disease:xgboost:0x1.999999999999ap-2:1",
+    "heart_disease:xgboost:0x1.999999999999ap-2:2",
+    "heart_disease:xgboost:0x1.999999999999ap-2:3",
+    "heart_disease:xgboost:0x1.999999999999ap-2:4",
+    "heart_disease:tabpfn:0x0.0p+0:0",
+    "heart_disease:tabpfn:0x0.0p+0:1",
+    "heart_disease:tabpfn:0x0.0p+0:2",
+    "heart_disease:tabpfn:0x0.0p+0:3",
+    "heart_disease:tabpfn:0x0.0p+0:4",
+    "heart_disease:tabpfn:0x1.999999999999ap-4:0",
+    "heart_disease:tabpfn:0x1.999999999999ap-4:1",
+    "heart_disease:tabpfn:0x1.999999999999ap-4:2",
+    "heart_disease:tabpfn:0x1.999999999999ap-4:3",
+    "heart_disease:tabpfn:0x1.999999999999ap-4:4",
+    "heart_disease:tabpfn:0x1.999999999999ap-3:0",
+    "heart_disease:tabpfn:0x1.999999999999ap-3:1",
+    "heart_disease:tabpfn:0x1.999999999999ap-3:2",
+    "heart_disease:tabpfn:0x1.999999999999ap-3:3",
+    "heart_disease:tabpfn:0x1.999999999999ap-3:4",
+    "heart_disease:tabpfn:0x1.3333333333333p-2:0",
+    "heart_disease:tabpfn:0x1.3333333333333p-2:1",
+    "heart_disease:tabpfn:0x1.3333333333333p-2:2",
+    "heart_disease:tabpfn:0x1.3333333333333p-2:3",
+    "heart_disease:tabpfn:0x1.3333333333333p-2:4",
+    "heart_disease:tabpfn:0x1.999999999999ap-2:0",
+    "heart_disease:tabpfn:0x1.999999999999ap-2:1",
+    "heart_disease:tabpfn:0x1.999999999999ap-2:2",
+    "heart_disease:tabpfn:0x1.999999999999ap-2:3",
+    "heart_disease:tabpfn:0x1.999999999999ap-2:4"
+  ],
+  "failures": {},
+  "integrity": {
+    "complete": true,
+    "completed": 200,
+    "duplicates": [],
+    "expected": 200,
+    "failed": [],
+    "missing": [],
+    "unexpected": []
+  },
+  "normalized_config": {
+    "benchmark_mode": "unified",
+    "benchmark_settings": {
+      "feature_shifts": null,
+      "label_noise_levels": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4
+      ]
+    },
+    "calibration_settings": {
+      "calibration_size": 0.15,
+      "enabled": false,
+      "method": "sigmoid",
+      "test_size": 0.15,
+      "train_size": 0.7
+    },
+    "dataset": {
+      "data_home": {
+        "heart_disease": "data/raw"
+      },
+      "names": [
+        "german_credit",
+        "heart_disease"
+      ]
+    },
+    "experiments": {
+      "calibration": {
+        "calibration_size": 0.15,
+        "enabled": false,
+        "method": "sigmoid",
+        "test_size": 0.15,
+        "train_size": 0.7
+      },
+      "label_noise": {
+        "enabled": true,
+        "levels": [
+          0.0,
+          0.1,
+          0.2,
+          0.3,
+          0.4
+        ]
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "test_size": 0.2
+    },
+    "model_params": {
+      "logistic_regression": {
+        "max_iter": 1000
+      },
+      "random_forest": {
+        "n_estimators": 300,
+        "n_jobs": -1
+      },
+      "tabpfn": {
+        "device": "cpu",
+        "show_progress_bar": false
+      },
+      "xgboost": {
+        "colsample_bytree": 0.8,
+        "eval_metric": "logloss",
+        "learning_rate": 0.05,
+        "max_depth": 4,
+        "n_estimators": 300,
+        "n_jobs": -1,
+        "subsample": 0.8
+      }
+    },
+    "models": [
+      "logistic_regression",
+      "random_forest",
+      "xgboost",
+      "tabpfn"
+    ],
+    "output": {
+      "directory": "results",
+      "filename": "core_matrix_results.csv"
+    },
+    "project": {
+      "name": "TrustTab core label-noise matrix",
+      "version": "0.1.0"
+    },
+    "tracking": {
+      "directory": "experiments/runs",
+      "enabled": true,
+      "experiment_name": "trusttab-core-matrix"
+    }
+  },
+  "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.17.1",
+    "tabpfn": "10.0.0",
+    "torch": "2.15.0+cpu",
+    "trusttab": "0.1.0",
+    "xgboost": "3.2.0"
+  },
+  "platform": "Windows-10-10.0.26300-SP0",
+  "python": "3.11.9",
+  "run_id": "trusttab-e18ead6a25c341549ba41ce12d7f5ef8",
+  "schema_version": 1,
+  "status": "completed",
+  "updated_at": "2026-11-14T16:48:30.657848Z"
+}

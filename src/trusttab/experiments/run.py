@@ -32,6 +32,12 @@ def main() -> None:
     parser.add_argument(
         "--runs-dir", type=Path, default=None, help="Tracked run directory."
     )
+    parser.add_argument(
+        "--resume-dir",
+        type=Path,
+        default=None,
+        help="Run or resume the configured label-noise matrix in this checkpoint directory.",
+    )
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument("--list-runs", action="store_true", help="List recorded runs.")
     actions.add_argument("--inspect-run", metavar="RUN_ID", help="Inspect one run.")
@@ -98,6 +104,22 @@ def main() -> None:
 
     normalized_config = config
 
+    if args.resume_dir is not None:
+        from trusttab.experiments.resumable import run_resumable_experiment
+
+        results = run_resumable_experiment(
+            normalized_config,
+            args.resume_dir,
+            progress_callback=print,
+        )
+        integrity = results.attrs.get("integrity")
+        if integrity is not None:
+            print(json.dumps(integrity, indent=2))
+            raise SystemExit(2)
+        print(f"Experiment completed: {len(results)} result rows")
+        print(f"Checkpoint directory: {args.resume_dir}")
+        return
+
     output = config["output"]
     output_path = Path(output["directory"]) / output["filename"]
 
@@ -111,6 +133,7 @@ def main() -> None:
     common = {
         "seeds": config["experiments"]["seeds"],
         "model_names": config["models"],
+        "model_params": config.get("model_params", {}),
         "test_size": config["experiments"].get("test_size", 0.2),
         "output_path": output_path,
     }
@@ -144,6 +167,8 @@ def main() -> None:
             ),
             original_config=original_config,
             normalized_config=normalized_config,
+            calibration_settings=config.get("calibration_settings"),
+            dataset_data_home=config["dataset"].get("data_home"),
         )
     elif benchmark_mode == "unified":
         settings = config["benchmark_settings"]
@@ -151,6 +176,8 @@ def main() -> None:
             dataset_names=dataset_names,
             label_noise_levels=settings["label_noise_levels"],
             feature_shifts=settings["feature_shifts"],
+            calibration_settings=config.get("calibration_settings"),
+            dataset_data_home=config["dataset"].get("data_home"),
             **common,
         )
     elif benchmark_mode == "feature_shift_legacy":

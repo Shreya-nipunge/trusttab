@@ -9,8 +9,9 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from trusttab.data import load_adult, load_german_credit
+from trusttab.data import load_adult, load_german_credit, load_heart_disease
 from trusttab.evaluation import evaluate_classifier
+from trusttab.experiments.seeding import derive_seed
 from trusttab.models import build_model
 from trusttab.noise import inject_symmetric_label_noise
 
@@ -22,6 +23,7 @@ MetricEvaluator = Callable[
 
 DATASET_LOADERS = {
     "german_credit": load_german_credit,
+    "heart_disease": load_heart_disease,
     "adult": load_adult,
 }
 
@@ -83,19 +85,23 @@ def run_stress_test(
     results = []
 
     for seed in seeds:
+        split_seed = derive_seed(seed, "split", dataset_name)
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
             test_size=test_size,
-            random_state=seed,
+            random_state=split_seed,
             stratify=y,
         )
 
         for noise_rate in noise_levels:
+            noise_seed = derive_seed(
+                seed, "label_noise", dataset_name, float(noise_rate).hex()
+            )
             noisy_y_train = inject_symmetric_label_noise(
                 y_train,
                 noise_rate=noise_rate,
-                seed=seed,
+                seed=noise_seed,
             )
 
             corrupted_count = int(
@@ -105,6 +111,7 @@ def run_stress_test(
             )
 
             for model_name in model_names:
+                model_seed = derive_seed(seed, "model", dataset_name, model_name)
                 params = (
                     model_params.get(model_name, {})
                     if model_params is not None
@@ -114,7 +121,7 @@ def run_stress_test(
                 model = build_model(
                     model_name=model_name,
                     features=X_train,
-                    random_state=seed,
+                    random_state=model_seed,
                     model_params=params,
                 )
 
@@ -146,6 +153,9 @@ def run_stress_test(
                         "model": model_name,
                         "noise_rate": float(noise_rate),
                         "seed": int(seed),
+                        "split_seed": split_seed,
+                        "noise_seed": noise_seed,
+                        "model_seed": model_seed,
                         "n_train": len(X_train),
                         "n_test": len(X_test),
                         "n_corrupted": corrupted_count,

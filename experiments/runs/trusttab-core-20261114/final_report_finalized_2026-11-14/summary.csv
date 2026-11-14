@@ -1,0 +1,31 @@
+item,value
+title,"TrustTab Core Experiment - validated research report, 2026-11-14"
+datasets_evaluated,2
+models_evaluated,4
+random_seeds,5
+stress_scenarios,5
+overall_best_performing_model,tabpfn
+most_robust_model,logistic_regression
+best_calibrated_model,unavailable
+largest_mean_performance_degradation,"('label_noise', 'symmetric_label_noise', np.float64(0.4), 'roc_auc')"
+largest_degradation_value,0.23437121212121212
+paired_model_comparisons,648
+significant_after_holm,63
+mean_baseline_accuracy,0.7978995901639345
+mean_baseline_balanced_accuracy,0.7529437229437229
+mean_baseline_macro_f1,0.7595717047327806
+mean_baseline_roc_auc,0.8556106601731603
+mean_baseline_brier_score,0.14227033003985
+mean_baseline_ece,0.07385257224949357
+mean_baseline_adaptive_ece,0.09575151576595217
+mean_baseline_mce,0.19527878180826333
+mean_baseline_log_loss,0.4452248115871374
+mean_baseline_calibrated_accuracy,
+mean_baseline_calibrated_balanced_accuracy,
+mean_baseline_calibrated_macro_f1,
+mean_baseline_calibrated_roc_auc,
+mean_baseline_calibrated_brier_score,
+mean_baseline_calibrated_ece,
+mean_baseline_calibrated_adaptive_ece,
+mean_baseline_calibrated_mce,
+mean_baseline_calibrated_log_loss,

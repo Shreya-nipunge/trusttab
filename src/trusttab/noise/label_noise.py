@@ -10,17 +10,19 @@ def inject_symmetric_label_noise(
     seed: int,
 ) -> pd.Series | np.ndarray:
     """
-    Randomly replace labels with a different class label.
+    Independently flip each label with probability ``noise_rate``.
 
-    Each sample has the same probability of being selected for
-    corruption. A selected sample is assigned a different class.
+    For binary labels, a selected label changes to the other class. For
+    multiclass labels, it changes uniformly to one of the other observed
+    classes. The realized number of flips is random (Binomial for binary
+    labels), with expected value ``noise_rate * len(y)``.
 
     Parameters
     ----------
     y:
         Original class labels.
     noise_rate:
-        Fraction of labels to corrupt, between 0 and 1.
+        Independent per-label flip probability, between 0 and 1.
     seed:
         Random seed for reproducibility.
 
@@ -34,6 +36,9 @@ def inject_symmetric_label_noise(
 
     if len(y) == 0:
         raise ValueError("Labels must not be empty.")
+
+    if np.asarray(y).ndim != 1:
+        raise ValueError("Labels must be one-dimensional.")
 
     if not isinstance(noise_rate, (int, float)) or isinstance(
         noise_rate, bool
@@ -59,21 +64,16 @@ def inject_symmetric_label_noise(
 
     rng = np.random.default_rng(seed)
     noisy = original.copy()
+    if noise_rate == 0:
+        flip_mask = np.zeros(len(original), dtype=bool)
+    elif noise_rate == 1:
+        flip_mask = np.ones(len(original), dtype=bool)
+    else:
+        flip_mask = rng.random(len(original)) < noise_rate
 
-    n_samples = len(original)
-    n_corrupt = int(round(noise_rate * n_samples))
-
-    if n_corrupt > 0:
-        selected_indices = rng.choice(
-            n_samples,
-            size=n_corrupt,
-            replace=False,
-        )
-
-        for index in selected_indices:
-            alternative_classes = classes[classes != original[index]]
-
-            noisy[index] = rng.choice(alternative_classes)
+    for index in np.flatnonzero(flip_mask):
+        alternative_classes = classes[classes != original[index]]
+        noisy[index] = rng.choice(alternative_classes)
 
     if isinstance(y, pd.Series):
         return pd.Series(

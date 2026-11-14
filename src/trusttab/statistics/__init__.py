@@ -10,6 +10,15 @@ from trusttab.statistics.comparison import (
     compare_paired_scores,
     compare_paired_scores_wilcoxon,
 )
+from trusttab.statistics.research import (
+    analyze_friedman_nemenyi,
+    calibration_wilcoxon_results,
+    compare_degradation_slopes,
+    degradation_slope_results,
+    descriptive_summary,
+    rank_biserial_correlation,
+    run_research_analysis,
+)
 
 __all__ = [
     "ComparisonResult",
@@ -20,4 +29,11 @@ __all__ = [
     "compare_models",
     "compare_paired_scores",
     "compare_paired_scores_wilcoxon",
+    "analyze_friedman_nemenyi",
+    "calibration_wilcoxon_results",
+    "compare_degradation_slopes",
+    "degradation_slope_results",
+    "descriptive_summary",
+    "rank_biserial_correlation",
+    "run_research_analysis",
 ]

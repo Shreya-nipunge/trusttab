@@ -44,8 +44,7 @@ def build_model(
     """
     if model_name not in SUPPORTED_MODELS:
         raise ValueError(
-            f"Unknown model '{model_name}'. "
-            f"Supported models: {SUPPORTED_MODELS}"
+            f"Unknown model '{model_name}'. " f"Supported models: {SUPPORTED_MODELS}"
         )
 
     params = model_params.copy() if model_params is not None else {}
@@ -56,6 +55,7 @@ def build_model(
             "random_state": random_state,
         }
         defaults.update(params)
+        defaults["random_state"] = random_state
         classifier = LogisticRegression(**defaults)
 
     elif model_name == "random_forest":
@@ -65,6 +65,7 @@ def build_model(
             "n_jobs": -1,
         }
         defaults.update(params)
+        defaults["random_state"] = random_state
         classifier = RandomForestClassifier(**defaults)
 
     elif model_name == "xgboost":
@@ -88,14 +89,19 @@ def build_model(
             "n_jobs": -1,
         }
         defaults.update(params)
+        defaults["random_state"] = random_state
         classifier = XGBClassifier(**defaults)
 
     else:
-        classifier = TabPFNAdapter(model_params=params)
+        tabpfn_params = {**params, "random_state": random_state}
+        classifier = TabPFNAdapter(model_params=tabpfn_params)
 
     return Pipeline(
         steps=[
-            ("preprocessor", build_preprocessor(features)),
+            (
+                "preprocessor",
+                build_preprocessor(features, scale_numeric=model_name != "tabpfn"),
+            ),
             ("classifier", classifier),
         ]
     )

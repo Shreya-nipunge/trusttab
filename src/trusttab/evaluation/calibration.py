@@ -33,7 +33,14 @@ def calibrate_fitted_classifier(
     y_calibration: Any,
     method: str = "sigmoid",
 ) -> CalibratedClassifierCV:
-    """Calibrate a fitted classifier using separate calibration data."""
+    """Calibrate a fitted classifier without refitting it.
+
+    ``CalibratedClassifierCV`` uses ``decision_function`` when the fitted
+    estimator exposes it; otherwise it calibrates its ``predict_proba``
+    output. ``FrozenEstimator`` keeps the base estimator and any preprocessing
+    pipeline fixed while the mapping is fitted on the separate calibration
+    observations and labels.
+    """
     if method not in {"sigmoid", "isotonic"}:
         raise ValueError("method must be 'sigmoid' or 'isotonic'.")
 

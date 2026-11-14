@@ -12,10 +12,17 @@ from trusttab.data.adult import (
     validate_adult_data,
 )
 
+from trusttab.data.heart_disease import (
+    load_heart_disease,
+    validate_heart_disease_data,
+)
+
 __all__ = [
     "load_german_credit",
     "validate_german_credit_data",
     "load_adult",
     "validate_adult_data",
+    "load_heart_disease",
+    "validate_heart_disease_data",
     "build_preprocessor",
 ]

@@ -4,8 +4,11 @@
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.model_selection import train_test_split
 
 from trusttab.experiments import runner
+from trusttab.experiments.seeding import derive_seed
+from trusttab.noise.label_noise import inject_symmetric_label_noise
 
 
 def patch_german_credit_loader(monkeypatch, fake_dataset):
@@ -93,7 +96,61 @@ def test_runner_records_experiment_metadata(
     assert row["noise_rate"] == 0.2
     assert row["n_train"] == 80
     assert row["n_test"] == 20
-    assert row["n_corrupted"] == 16
+    assert 0 <= row["n_corrupted"] <= row["n_train"]
+
+
+def test_runner_corrupts_only_train_labels_and_passes_derived_noise_seed(
+    monkeypatch, fake_dataset
+):
+    X, y = fake_dataset
+    original_y = y.copy(deep=True)
+    patch_german_credit_loader(monkeypatch, (X, y))
+    monkeypatch.setattr(runner, "build_model", fake_model_factory)
+
+    base_seed = 17
+    split_seed = derive_seed(base_seed, "split", "german_credit")
+    expected = train_test_split(
+        X,
+        y,
+        test_size=0.2,
+        random_state=split_seed,
+        stratify=y,
+    )
+    expected_y_train, expected_y_test = expected[2], expected[3]
+    noise_seed = derive_seed(
+        base_seed, "label_noise", "german_credit", float(0.4).hex()
+    )
+    noise_calls = []
+
+    def tracked_noise(labels, noise_rate, seed):
+        noise_calls.append((labels.copy(), noise_rate, seed))
+        return inject_symmetric_label_noise(labels, noise_rate, seed)
+
+    monkeypatch.setattr(runner, "inject_symmetric_label_noise", tracked_noise)
+    evaluated_labels = []
+
+    def tracked_evaluator(y_true, y_pred, y_prob):
+        evaluated_labels.append(np.asarray(y_true).copy())
+        return fake_evaluator(y_true, y_pred, y_prob)
+
+    results = runner.run_stress_test(
+        noise_levels=[0.4],
+        seeds=[base_seed],
+        model_names=["logistic_regression"],
+        metric_evaluator=tracked_evaluator,
+    )
+
+    assert len(noise_calls) == 1
+    passed_train_labels, passed_rate, passed_seed = noise_calls[0]
+    pd.testing.assert_series_equal(passed_train_labels, expected_y_train)
+    assert passed_rate == 0.4
+    assert passed_seed == noise_seed
+    np.testing.assert_array_equal(evaluated_labels[0], expected_y_test.to_numpy())
+    assert results.iloc[0]["n_corrupted"] == np.sum(
+        inject_symmetric_label_noise(expected_y_train, 0.4, noise_seed)
+        != expected_y_train.to_numpy()
+    )
+    pd.testing.assert_series_equal(y, original_y)
 
 
 def test_runner_uses_supplied_metric_evaluator(
@@ -183,6 +240,32 @@ def test_runner_uses_adult_dataset(monkeypatch, fake_dataset):
 
     assert adult_loader_called == [True]
     assert results.iloc[0]["dataset"] == "adult"
+
+
+def test_runner_uses_heart_disease_dataset(monkeypatch, fake_dataset):
+    loader_called = []
+
+    def fake_heart_disease_loader():
+        loader_called.append(True)
+        return fake_dataset
+
+    monkeypatch.setitem(
+        runner.DATASET_LOADERS,
+        "heart_disease",
+        fake_heart_disease_loader,
+    )
+    monkeypatch.setattr(runner, "build_model", fake_model_factory)
+
+    results = runner.run_stress_test(
+        dataset_name="heart_disease",
+        noise_levels=[0.0],
+        seeds=[42],
+        model_names=["logistic_regression"],
+        metric_evaluator=fake_evaluator,
+    )
+
+    assert loader_called == [True]
+    assert results.iloc[0]["dataset"] == "heart_disease"
 
 
 def test_runner_rejects_unsupported_dataset():

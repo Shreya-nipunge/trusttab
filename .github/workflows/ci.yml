@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest -q
+      - run: trusttab --help
+
+  optional-xgboost:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev,xgboost]"
+      - run: pytest -q tests/test_models.py tests/test_benchmark.py
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install --upgrade pip build twine
+      - run: python -m build --sdist --wheel --outdir dist
+      - run: twine check dist/*
+      - name: Inspect distributions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import tarfile
+          import zipfile
+
+          wheels = list(Path("dist").glob("*.whl"))
+          sdists = list(Path("dist").glob("*.tar.gz"))
+          assert len(wheels) == len(sdists) == 1
+          forbidden_suffixes = {
+              ".safetensors", ".ckpt", ".pt", ".pth", ".csv", ".parquet",
+              ".sqlite", ".db", ".pkl", ".pickle", ".env", ".pypirc",
+          }
+          with zipfile.ZipFile(wheels[0]) as archive:
+              files = archive.namelist()
+              assert "trusttab/api.py" in files
+              assert any(name.endswith("entry_points.txt") for name in files)
+              assert not any(Path(name).suffix.lower() in forbidden_suffixes for name in files)
+              assert not any(".venv" in name or "phase8_smoke" in name for name in files)
+          with tarfile.open(sdists[0]) as archive:
+              files = archive.getnames()
+              assert any(name.endswith("/src/trusttab/api.py") for name in files)
+              assert any(name.endswith("/LICENSE") for name in files)
+              assert not any(Path(name).suffix.lower() in forbidden_suffixes for name in files)
+              assert not any(".venv" in name or "phase8_smoke" in name for name in files)
+          PY
+      - name: Install wheel outside checkout
+        run: |
+          python -m venv /tmp/trusttab-wheel-env
+          /tmp/trusttab-wheel-env/bin/python -m pip install dist/*.whl
+          cd /tmp
+          /tmp/trusttab-wheel-env/bin/python -c "import trusttab; from trusttab.api import build_model; print(trusttab.__version__)"
+          /tmp/trusttab-wheel-env/bin/trusttab --help
+          /tmp/trusttab-wheel-env/bin/python "$GITHUB_WORKSPACE/examples/quickstart.py"
+      - name: Install source distribution outside checkout
+        run: |
+          python -m venv /tmp/trusttab-sdist-env
+          /tmp/trusttab-sdist-env/bin/python -m pip install dist/*.tar.gz
+          cd /tmp
+          /tmp/trusttab-sdist-env/bin/python -c "import trusttab; from trusttab.api import build_model; print(trusttab.__version__)"
